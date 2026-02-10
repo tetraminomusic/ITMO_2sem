@@ -1,0 +1,252 @@
+@startuml
+interface commands.Command {
+~ void execute(String)
+~ String getDescription()
+}
+
+class commands.GroupCountingByMinimalCommand {
+- CollectionManager collectionManager
++ void execute(String)
++ String getDescription()
+}
+
+
+class managers.FileManager {
+- String envVar
+- Gson gson
++ void write(LinkedHashMap<String,LabWork>)
++ LinkedHashMap<String,LabWork> read()
+}
+
+
+class commands.ExitCommand {
+- CollectionManager collectionManager
++ void execute(String)
++ String getDescription()
+}
+
+
+class commands.CountLessThanDifficulty {
+- CollectionManager collectionManager
++ void execute(String)
++ String getDescription()
+}
+
+
+class commands.InfoCommand {
+- CollectionManager collectionManager
++ void execute(String)
++ String getDescription()
+}
+
+
+class commands.ExecuteScriptCommand {
+- CommandManager commandManager
++ void execute(String)
++ String getDescription()
+}
+
+
+class commands.HelpCommand {
+- Map<String,Command> commands
++ void execute(String)
++ String getDescription()
+}
+
+
+class managers.LocalDateTimeAdapter {
++ JsonElement serialize(LocalDateTime,Type,JsonSerializationContext)
++ LocalDateTime deserialize(JsonElement,Type,JsonDeserializationContext)
+}
+
+class models.Person {
+- String name
+- java.time.LocalDateTime birthday
+- float height
+- Double weight
+- String passportID
+}
+
+class commands.GavrilovsayCommand {
+- CollectionManager collectionManager
+- String Gavrilov_art
++ void execute(String)
++ String getDescription()
+}
+
+
+class managers.CommandManager {
+- Map<String,Command> commands
+- List<String> history
+- LabWorkAsker asker
++ void execute(String)
+- void addToHistory(String)
++ List<String> getHistory()
++ Set<String> getCommandNames()
++ LabWorkAsker getAsker()
+}
+
+
+class commands.PrintFieldDescendingMinimalPointCommand {
+- CollectionManager collectionManager
++ void execute(String)
++ String getDescription()
+}
+
+
+class commands.HistoryCommand {
+- List<String> history
++ void execute(String)
++ String getDescription()
+}
+
+
+enum models.Difficulty {
++  VERY_EASY
++  HARD
++  HOPELESS
+}
+
+class commands.ClearCommand {
+- CollectionManager collectionManager
++ void execute(String)
++ String getDescription()
+}
+
+
+class models.LabWork {
+- Integer id
+- String name
+- Coordinates coordinates
+- java.time.LocalDateTime creationDate
+- float minimalPoint
+- String description
+- Integer tunedInWorks
+- Difficulty difficulty
+- Person author
++ int compareTo(LabWork)
++ String toString()
++ Integer getId()
++ String getName()
++ float getMinimalPoint()
++ Difficulty getDifficulty()
+}
+
+
+class commands.InsertCommand {
+- CollectionManager collectionManager
+- LabWorkAsker asker
++ void execute(String)
++ String getDescription()
+}
+
+
+class commands.ShowCommand {
+- CollectionManager collectionManager
++ void execute(String)
++ String getDescription()
+}
+
+
+class Main {
++ {static} void main(String[])
+}
+
+class managers.LabWorkAsker {
+- LineReader reader
+- Scanner scriptScanner
++ void setScriptScanner(Scanner)
+- String askString(String,boolean)
+- float askFloat(String,boolean)
++ Difficulty askDifficulty()
++ float askMinimalPoint()
+- Long askLong(String,Long,Long,boolean)
+- LocalDateTime askDate(String)
+- Integer askInt(String,boolean)
+- Double askWeight(String,boolean)
+- String askPassport(String,boolean)
++ Coordinates askCoordinates()
++ Person askPerson()
++ LabWork createLabWork(Integer)
+}
+
+
+class commands.RemoveLowerCommand {
+- CollectionManager collectionManager
+- LabWorkAsker asker
++ void execute(String)
++ String getDescription()
+}
+
+
+class managers.CollectionManager {
+- LinkedHashMap<String,LabWork> collection
+- LocalDateTime lastInitTime
++ LinkedHashMap<String,LabWork> getCollection()
++ Integer generateNextId()
++ void clear()
++ String info()
+}
+
+
+class commands.RemovekeyCommand {
+- CollectionManager collectionManager
++ void execute(String)
++ String getDescription()
+}
+
+
+class commands.SaveCommand {
+- CollectionManager collectionManager
+- FileManager fileManager
++ void execute(String)
++ String getDescription()
+}
+
+
+class commands.UpdateCommand {
+- CollectionManager collectionManager
+- LabWorkAsker asker
++ void execute(String)
++ String getDescription()
+}
+
+
+class commands.ReplaceIfGreaterCommand {
+- CollectionManager collectionManager
+- LabWorkAsker asker
++ void execute(String)
++ String getDescription()
+}
+
+
+class models.Coordinates {
+- Long x
+- long y
++ String toString()
+}
+
+
+
+
+commands.Command <|.. commands.GroupCountingByMinimalCommand
+commands.Command <|.. commands.ExitCommand
+commands.Command <|.. commands.CountLessThanDifficulty
+commands.Command <|.. commands.InfoCommand
+commands.Command <|.. commands.ExecuteScriptCommand
+commands.Command <|.. commands.HelpCommand
+managers.JsonSerializer <|.. managers.LocalDateTimeAdapter
+managers.JsonDeserializer <|.. managers.LocalDateTimeAdapter
+commands.Command <|.. commands.GavrilovsayCommand
+commands.Command <|.. commands.PrintFieldDescendingMinimalPointCommand
+commands.Command <|.. commands.HistoryCommand
+commands.Command <|.. commands.ClearCommand
+models.Comparable <|.. models.LabWork
+commands.Command <|.. commands.InsertCommand
+commands.Command <|.. commands.ShowCommand
+commands.Command <|.. commands.RemoveLowerCommand
+commands.Command <|.. commands.RemovekeyCommand
+commands.Command <|.. commands.SaveCommand
+commands.Command <|.. commands.UpdateCommand
+commands.Command <|.. commands.ReplaceIfGreaterCommand
+@enduml
