@@ -28,6 +28,12 @@ public class CommandManager {
         commands.put("history", new HistoryCommand(history));
         commands.put("update", new UpdateCommand(collection, asker));
         commands.put("replace_if_greater", new ReplaceIfGreaterCommand(collection, asker));
+        commands.put("remove_lower", new RemoveLowerCommand(collection, asker));
+        commands.put("execute_script", new ExecuteScriptCommand(this));
+        commands.put("count_less_than_difficulty", new CountLessThanDifficulty(collection));
+        commands.put("print_field_descending_minimal_point", new PrintFieldDescendingMinimalPointCommand(collection));
+        commands.put("group_counting_by_minimal", new GroupCountingByMinimalCommand(collection));
+        commands.put("count_less_difficulty", new CountLessThanDifficulty(collection));
     }
 
     public void execute(String input) {

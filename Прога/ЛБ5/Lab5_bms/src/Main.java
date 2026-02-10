@@ -11,15 +11,21 @@ import org.jline.reader.impl.completer.StringsCompleter;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
+
+//TODO: добавить Javadoc
+
 public class Main {
     public static void main(String[] args) {
         System.out.println("Добро пожаловать в предложение LabWork!");
         try {
             Terminal terminal = TerminalBuilder.builder().system(true).build();
-            StringsCompleter completer = new StringsCompleter("help", "info", "show", "insert", "update", "remove_key", "clear", "save", "execute_script", "exit", "history", "gavrilovsay");
+            StringsCompleter completer = new StringsCompleter(
+                    "help", "info", "show", "insert", "update", "remove_key",
+                    "clear", "save", "execute_script", "exit", "history", "gavrilovsay",
+                    "group_counting_by_minimal","print_field_descending_minimal_point",
+                    "remove_lover", "replace_if_greater", "count_less_than_difficulty");
+
             LineReader lineReader = LineReaderBuilder.builder().terminal(terminal).completer(completer).build();
-
-
 
             CollectionManager collectionManager = new CollectionManager();
             FileManager fileManager = new FileManager("LAB_DATA_PATH");

@@ -13,7 +13,7 @@ public class HelpCommand implements Command{
 
     @Override
     public void execute(String arg) {
-        commands.forEach((name, command) -> System.out.printf("%-15s | %s%n", name, command.getDescription()));
+        commands.forEach((name, command) -> System.out.printf("%-36s | %s%n", name, command.getDescription()));
     }
 
     @Override

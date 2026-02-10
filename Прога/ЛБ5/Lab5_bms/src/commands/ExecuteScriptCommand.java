@@ -4,7 +4,6 @@ import managers.CommandManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.lang.reflect.Field;
 import java.util.Scanner;
 
 public class ExecuteScriptCommand implements Command{

@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="Джарник для тестов на линуксе">
+    <output-path>//wsl.localhost/Ubuntu/home/tetramino</output-path>
+    <root id="archive" name="Lab5_bms.jar">
+      <element id="module-output" name="Lab5_bms" />
+      <element id="extracted-dir" path="$USER_HOME$/Downloads/gson-2.10.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Downloads/jline-3.23.0.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
