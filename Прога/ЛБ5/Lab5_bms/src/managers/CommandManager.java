@@ -1,6 +1,7 @@
 package managers;
 
 import commands.*;
+import org.jline.reader.LineReader;
 
 import java.util.*;
 
@@ -12,28 +13,33 @@ public class CommandManager {
 
     private final LabWorkAsker asker;
 
-    public CommandManager(CollectionManager collection, FileManager file, LabWorkAsker asker) {
+    private final LineReader reader;
+
+    public CommandManager(CollectionManager collection, FileManager file, LabWorkAsker asker, LineReader reader) {
 
         this.asker = asker;
+        this.reader = reader;
 
-        commands.put("clear", new ClearCommand(collection));
-        commands.put("exit", new ExitCommand(collection));
-        commands.put("gavrilovsay", new GavrilovsayCommand(collection));
-        commands.put("info", new InfoCommand(collection));
-        commands.put("insert", new InsertCommand(collection, asker));
-        commands.put("remove_key", new RemovekeyCommand(collection));
-        commands.put("save", new SaveCommand(collection, file));
-        commands.put("show", new ShowCommand(collection));
         commands.put("help", new HelpCommand(commands));
-        commands.put("history", new HistoryCommand(history));
+        commands.put("info", new InfoCommand(collection));
+        commands.put("show", new ShowCommand(collection));
+        commands.put("insert", new InsertCommand(collection, asker));
         commands.put("update", new UpdateCommand(collection, asker));
-        commands.put("replace_if_greater", new ReplaceIfGreaterCommand(collection, asker));
-        commands.put("remove_lower", new RemoveLowerCommand(collection, asker));
+        commands.put("remove_key", new RemovekeyCommand(collection));
+        commands.put("clear", new ClearCommand(collection));
+        commands.put("save", new SaveCommand(collection, file));
         commands.put("execute_script", new ExecuteScriptCommand(this));
-        commands.put("count_less_than_difficulty", new CountLessThanDifficulty(collection));
-        commands.put("print_field_descending_minimal_point", new PrintFieldDescendingMinimalPointCommand(collection));
+        commands.put("exit", new ExitCommand(collection));
+        commands.put("remove_lower", new RemoveLowerCommand(collection, asker));
+        commands.put("history", new HistoryCommand(history));
+        commands.put("replace_if_greater", new ReplaceIfGreaterCommand(collection, asker));
         commands.put("group_counting_by_minimal", new GroupCountingByMinimalCommand(collection));
         commands.put("count_less_difficulty", new CountLessThanDifficulty(collection));
+        commands.put("print_field_desceding_minimal_point", new PrintFieldDescendingMinimalPointCommand(collection));
+
+        commands.put("gavrilovsay", new GavrilovsayCommand(collection));
+        commands.put("polyakov", new PolyakovCommand(collection));
+        commands.put("псж", new WriteDeduction(reader));
     }
 
     public void execute(String input) {
@@ -53,7 +59,7 @@ public class CommandManager {
             addToHistory(pre_cmd);
             command.execute(arg);
         } else {
-            System.out.println("Ошибка: Команда " + pre_cmd + " не была найдена! Введите команду 'help' для справки");
+            System.out.println("\u001B[31mОшибка\u001B[0m: Команда " + pre_cmd + " не была найдена! Введите команду 'help' для справки");
         }
 
     }

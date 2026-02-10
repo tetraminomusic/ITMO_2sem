@@ -13,7 +13,7 @@ public class CountLessThanDifficulty implements Command{
     @Override
     public void execute(String arg) {
         if (arg == null || arg.isEmpty()) {
-            System.out.println("Ошибка: Введите значение сложности из списка: VERY_EASY, HARD, HOPELESS");
+            System.out.println("\u001B[31mОшибка\u001B[0m: Введите значение сложности из списка: VERY_EASY, HARD, HOPELESS");
         }
 
         try {
@@ -24,7 +24,7 @@ public class CountLessThanDifficulty implements Command{
                     .count();
             System.out.println("Количество элементов со сложностью ниже + " + target + ": " + count);
         } catch (IllegalArgumentException e) {
-            System.out.println("Ошибка: Такой сложности не существует в списке!");
+            System.out.println("\u001B[31mОшибка\u001B[0m: Такой сложности не существует в списке!");
         }
     }
 

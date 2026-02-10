@@ -48,7 +48,7 @@ public class LabWorkAsker {
 
             if (input.isEmpty()) {
                 if (nullable) return null;
-                System.out.println("Ошибка: Поле не может быть пустым!");
+                System.out.println("\u001B[31mОшибка\u001B[0m: Поле не может быть пустым!");
                 continue;
             }
             return input;
@@ -63,12 +63,12 @@ public class LabWorkAsker {
                 if (input == null) return 0.0f;
                 float val = Float.parseFloat(input);
                 if (val <= 0) {
-                    System.out.println("Ошибка: Число должно быть неотрицательным!");
+                    System.out.println("\u001B[31mОшибка\u001B[0m: Число должно быть неотрицательным!");
                     continue;
                 }
                 return val;
             } catch (NumberFormatException e) {
-                System.out.println("Ошибка:  введите число (дробь через точку)!");
+                System.out.println("\u001B[31mОшибка\u001B[0m:  введите число (дробь через точку)!");
             }
         }
     }
@@ -80,7 +80,7 @@ public class LabWorkAsker {
             try {
                 return Difficulty.valueOf(line);
             } catch (IllegalArgumentException e) {
-                System.out.println("Ошибка: Такой сложности нет в списке!");
+                System.out.println("\u001B[31mОшибка\u001B[0m: Такой сложности нет в списке!");
             }
         }
     }
@@ -92,12 +92,12 @@ public class LabWorkAsker {
                 float point = Float.parseFloat(line);
 
                 if (point <= 0) {
-                    System.out.println("Ошибка: Количество баллов должно быть неотрицательным!");
+                    System.out.println("\u001B[31mОшибка\u001B[0m: Количество баллов должно быть неотрицательным!");
                     continue;
                 }
                 return point;
             } catch (IllegalArgumentException e) {
-                System.out.println("Ошибка: Введите число (дробь через точку)!");
+                System.out.println("\u001B[31mОшибка\u001B[0m: Введите число (дробь через точку)!");
             }
         }
     }
@@ -129,7 +129,7 @@ public class LabWorkAsker {
                 String input = askString(message, false);
                 return LocalDate.parse(input, formatter).atStartOfDay();
             } catch (DateTimeParseException e) {
-                System.out.println("Ошибка: формат даты должен быть ДД.ММ.ГГГГ (например, 01.01.2000)");
+                System.out.println("\u001B[31mОшибка\u001B[0m: формат даты должен быть ДД.ММ.ГГГГ (например, 01.01.2000)");
             }
         }
     }
@@ -141,7 +141,7 @@ public class LabWorkAsker {
                 if (input == null) return null;
                 return Integer.parseInt(input);
             } catch (NumberFormatException e) {
-                System.out.println("Ошибка: Введите целое число!");
+                System.out.println("\u001B[31mОшибка\u001B[0m: Введите целое число!");
             }
         }
     }
@@ -155,12 +155,12 @@ public class LabWorkAsker {
             try {
                 Double weight = Double.parseDouble(input);
                 if (weight <= 0) {
-                    System.out.println("Ошибка: Вес должен быть неотрицательным!");
+                    System.out.println("\u001B[31mОшибка\u001B[0m: Вес должен быть неотрицательным!");
                     continue;
                 }
                 return weight;
             } catch (NumberFormatException e) {
-                System.out.println("Ошибка: введите число (Например: 75.5)!");
+                System.out.println("\u001B[31mОшибка\u001B[0m: введите число (Например: 75.5)!");
             }
         }
     }
@@ -172,7 +172,7 @@ public class LabWorkAsker {
             if (passport == null) return null;
 
             if (passport.length() > 50) {
-                System.out.println("Ошибка: длина ID не должна превышать 50 символов!");
+                System.out.println("\u001B[31mОшибка\u001B[0m: длина ID не должна превышать 50 символов!");
                 continue;
             }
             return passport;

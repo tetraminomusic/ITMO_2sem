@@ -16,12 +16,12 @@ public class ReplaceIfGreaterCommand implements Command{
     @Override
     public void execute(String arg) {
         if (arg == null || arg.isEmpty()) {
-            System.out.println("Ошибка: Введите ключ после названия команды!");
+            System.out.println("\u001B[31mОшибка\u001B[0m: Введите ключ после названия команды!");
             return;
         }
 
         if (!collectionManager.getCollection().containsKey(arg)) {
-            System.out.println("Ошибка: Элемент с ключом " + arg + " не найден!");
+            System.out.println("\u001B[31mОшибка\u001B[0m: Элемент с ключом " + arg + " не найден!");
             return;
         }
 

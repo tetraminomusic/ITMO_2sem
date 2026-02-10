@@ -23,7 +23,7 @@ public class Main {
                     "help", "info", "show", "insert", "update", "remove_key",
                     "clear", "save", "execute_script", "exit", "history", "gavrilovsay",
                     "group_counting_by_minimal","print_field_descending_minimal_point",
-                    "remove_lover", "replace_if_greater", "count_less_than_difficulty");
+                    "remove_lover", "replace_if_greater", "count_less_than_difficulty", "polyakov", "write_ПСЖ");
 
             LineReader lineReader = LineReaderBuilder.builder().terminal(terminal).completer(completer).build();
 
@@ -35,18 +35,18 @@ public class Main {
             var loadedData = fileManager.read();
             if (loadedData != null) collectionManager.getCollection().putAll(loadedData);
 
-            CommandManager commandManager = new CommandManager(collectionManager, fileManager, asker);
+            CommandManager commandManager = new CommandManager(collectionManager, fileManager, asker, lineReader);
 
             //обработка ввода
             while (true) {
                 String input;
                 try {
-                    input = lineReader.readLine("₽ ");
+                    input = lineReader.readLine("\u001B[32mКонсольТерминал@Что-то_заUмное:~₽ \u001B[0m");
                 } catch (EndOfFileException e) {
                     System.out.println("\nЗавершение работы программы...");
                     break;
                 } catch (UserInterruptException e) {
-                    System.out.println("Не ломайте программу бедного студента, пожалуйста");
+                    System.out.println("\u001B[33mНе ломайте программу бедного студента, пожалуйста\u001B[0m");
                     continue;
                 }
 
@@ -57,7 +57,7 @@ public class Main {
             }
 
         } catch (Exception e) {
-            System.err.println("Критическая ошибка: " + e.getMessage());
+            System.err.println("Критическая \u001B[31mОшибка\u001B[0m: " + e.getMessage());
         }
 
 

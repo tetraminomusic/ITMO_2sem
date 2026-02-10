@@ -23,7 +23,7 @@ public class FileManager {
         String path = System.getenv(envVar);
 
         if (path == null) {
-            System.out.println("Ошибка: Переменная окружения " + envVar + " не установлена!");
+            System.out.println("\u001B[31mОшибка\u001B[0m: Переменная окружения " + envVar + " не установлена!");
             return;
         }
 
@@ -33,14 +33,14 @@ public class FileManager {
 
         if (file.exists()) {
             if (!file.canWrite()) {
-                System.out.println("Ошибка: Недостаточно прав на запись в файл" + path);
+                System.out.println("\u001B[31mОшибка\u001B[0m: Недостаточно прав на запись в файл" + path);
                 return;
             } else if (!file.isFile()) {
-                System.out.println("Ошибка: В переменной окружения указан не файл: " + file.getName());
+                System.out.println("\u001B[31mОшибка\u001B[0m: В переменной окружения указан не файл: " + file.getName());
             }
         } else {
             if (parentDir.exists() && !parentDir.canWrite()) {
-                System.out.println("Ошибка: В директории " + parentDir.getName() + " нельзя создать файл!");
+                System.out.println("\u001B[31mОшибка\u001B[0m: В директории " + parentDir.getName() + " нельзя создать файл!");
                 return;
             }
         }
@@ -50,7 +50,7 @@ public class FileManager {
             writer.write(json);
             System.out.println("Запись в файл произошла успешно");
         } catch (IOException e) {
-            System.out.println("Ошибка при сохранении в файл: " + e.getMessage());
+            System.out.println("\u001B[31mОшибка\u001B[0m при сохранении в файл: " + e.getMessage());
         }
     }
 
@@ -60,23 +60,23 @@ public class FileManager {
         //TODO: хз, но возможно надо добавить проверку на наличие права на выполнения у родительской директории
 
         if (path == null || path.isEmpty()) {
-            System.out.println("Ошибка: Переменная окружения " + envVar + " не установлена! Будет создана пустая коллекция");
+            System.out.println("\u001B[31mОшибка\u001B[0m: Переменная окружения " + envVar + " не установлена! Будет создана пустая коллекция");
             return new LinkedHashMap<>();
         }
 
         File file = new File(path);
 
         if (!file.exists()) {
-            System.out.println("Ошибка: Такого файла не существует! Будет создана пустая коллекция");
+            System.out.println("\u001B[31mОшибка\u001B[0m: Такого файла не существует! Будет создана пустая коллекция");
             return new LinkedHashMap<String, LabWork>();
         }
 
         if (file.exists()) {
             if (!file.canRead()) {
-                System.out.println("Ошибка: Недостаточно прав на чтение файла " + path + ". Будет создана пустая коллекция");
+                System.out.println("\u001B[31mОшибка\u001B[0m: Недостаточно прав на чтение файла " + path + ". Будет создана пустая коллекция");
                 return new LinkedHashMap<String, LabWork>();
             } else if (!file.isFile()) {
-                System.out.println("Ошибка: В переменной окружения указан не файл: " + file.getName() + ". Будет создана пустая коллекция");
+                System.out.println("\u001B[31mОшибка\u001B[0m: В переменной окружения указан не файл: " + file.getName() + ". Будет создана пустая коллекция");
                 return new LinkedHashMap<String, LabWork>();
             }
         }
@@ -98,7 +98,7 @@ public class FileManager {
                 return result;
             }
         } catch (FileNotFoundException e) {
-            System.out.println("Ошибка: Файл не был найден! Будет создана пустая коллекция");
+            System.out.println("\u001B[31mОшибка\u001B[0m: Файл не был найден! Будет создана пустая коллекция");
             return new LinkedHashMap<String, LabWork>();
         }
     }

@@ -49,12 +49,12 @@ public class GavrilovsayCommand implements Command {
 
     @Override
     public void execute(String argument) {
-        if (argument != null) {
+        if (argument != null && !argument.isEmpty()) {
             if (argument.length() < 40) {
                 String message = " ".repeat((40 - argument.length()) / 2) + argument + " ".repeat((40 - argument.length()) / 2 + 3);
                 System.out.println(Gavrilov_art.replace("%m", message));
             } else {
-                System.out.println("Ошибка: слишком длинная фраза (до 40 символов)");
+                System.out.println("\u001B[31mОшибка\u001B[0m: слишком длинная фраза (до 40 символов)");
             }
         } else {
             String message = " ".repeat((40 - 33) / 2) + "Бро, тебе надо ввести фразу и тд." + " ".repeat((40 - 33) / 2 + 3);

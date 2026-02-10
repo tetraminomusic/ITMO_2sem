@@ -16,7 +16,7 @@ public class ExecuteScriptCommand implements Command{
     @Override
     public void execute(String arg) {
         if (arg == null || arg.isEmpty()) {
-            System.out.println("Ошибка: Введите имя файла-скрипта!");
+            System.out.println("\u001B[31mОшибка\u001B[0m: Введите имя файла-скрипта!");
             return;
         }
 
@@ -32,7 +32,7 @@ public class ExecuteScriptCommand implements Command{
             }
             commandManager.getAsker().setScriptScanner(null);
         } catch (FileNotFoundException e) {
-            System.out.println("Ошибка: Файл " + arg + " не был найден!");
+            System.out.println("\u001B[31mОшибка\u001B[0m: Файл " + arg + " не был найден!");
         }
     }
 

@@ -32,7 +32,7 @@ public class UpdateCommand  implements Command{
                 collectionManager.getCollection().put(key, updated);
                 System.out.println("Объект успешно обновлён");
             }
-        } catch (NumberFormatException e) {System.out.println("Ошибка: ID должен быть быть числом!");}
+        } catch (NumberFormatException e) {System.out.println("\u001B[31mОшибка\u001B[0m: ID должен быть быть числом!");}
 
 
     }

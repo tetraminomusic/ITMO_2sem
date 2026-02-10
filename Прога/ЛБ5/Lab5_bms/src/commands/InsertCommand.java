@@ -16,12 +16,12 @@ public class InsertCommand implements Command{
     @Override
     public void execute(String arg) {
         if (arg == null || arg.isEmpty()) {
-            System.out.println("Ошибка: Введите ключ (имя) для нового элемента");
+            System.out.println("\u001B[31mОшибка\u001B[0m: Введите ключ (имя) для нового элемента");
             return;
         }
 
         if (collectionManager.getCollection().containsKey(arg)) {
-            System.out.println("Ошибка: Элемент с ключом " + arg + " уже существует!");
+            System.out.println("\u001B[31mОшибка\u001B[0m: Элемент с ключом " + arg + " уже существует!");
             return;
         }
 
