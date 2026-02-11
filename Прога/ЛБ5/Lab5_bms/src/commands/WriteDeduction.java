@@ -4,6 +4,7 @@ import org.jline.reader.LineReader;
 import java.io.*;
 import java.nio.file.*;
 import java.time.format.DateTimeFormatter;
+import java.util.regex.Pattern;
 
 public class WriteDeduction implements Command {
     private final LineReader reader;
@@ -17,90 +18,29 @@ public class WriteDeduction implements Command {
         try {
             System.out.println("Заполнение ПСЖ:");
 
-            // УБРАТЬ \s из шаблона - это \u001B[31mОшибка\u001B[0m!
-            String texTemplate = """
-                    \\documentclass[a4paper,12pt]{article}
-                    \\usepackage[utf8]{inputenc}
-                    \\usepackage[T2A]{fontenc}
-                    \\usepackage[russian]{babel}
-                    \\usepackage[margin=2cm]{geometry}
-                    \\usepackage{array}
-                    \\setlength{\\parindent}{0pt}
-                    
-                    \\begin{document}
-                    
-                    \\begin{tabular}{p{0.5\\textwidth}p{0.5\\textwidth}}
-                    \\vspace{0pt}
-                    {В приказ} & \\\\
-                    \\vspace{0.2cm} & \\\\
-                    \\underline{\\makebox[4cm]{}} & \\\\
-                    (подпись) & \\\\
-                    \\vspace{0.5cm} & \\\\
-                    «\\underline{\\makebox[0.5cm]{%s}}» \\underline{\\makebox[2cm]{%s}} 20\\underline{\\makebox[1cm]{%s}} г. &
-                    \\end{tabular}
-                    
-                    \\vspace{-3cm}
-                    
-                    
-                    \\hfill{}{
-                    \\raggedleft
-                    \\begin{tabular}{r@{}}
-                    Ректору Университета ИТМО \\\\
-                    член-корреспонденту РАН \\\\
-                    д.т.н., профессору В.Н. Васильеву \\\\[1em]
-                    от \\underline{\\makebox[7cm]{%s}} \\\\
-                    {(фамилия, имя, отчество полностью)} \\\\
-                    обучающегося группы № \\underline{\\makebox[2cm]{%s}} \\\\
-                    факультета/института (кластера) \\\\[0.5em]
-                    \\underline{\\makebox[7cm]{%s}} \\\\
-                    {(наименование подразделения)} \\\\
-                    контактный телефон \\underline{\\makebox[4cm]{%s}} \\\\
-                    email \\underline{\\makebox[6cm]{%s}}
-                    \\end{tabular}
-                    }
-                    
-                    \\vspace{0.5cm}
-                    
-                    \\begin{center}
-                        \\textbf{ЗАЯВЛЕНИЕ}
-                    \\end{center}
-                    
-                    
-                    Прошу отчислить меня из университета по собственному желанию.
-                    
-                    \\begin{flushright}
-                    \\begin{tabular}{@{}c@{\\hspace{1.5cm}}c@{\\hspace{1.5cm}}c@{}}
-                    «\\underline{\\makebox[0.5cm]{%s}}» \\underline{\\makebox[2.2cm]{%s}} 20\\underline{\\makebox[1cm]{%s}} г. &\s
-                    \\underline{\\makebox[4cm]{}} &
-                    \\underline{\\makebox[6cm]{%s}} \\\\[3mm]
-                    \\multicolumn{1}{l}{\\phantom{абоаф1}(дата)} & (личная подпись) & (ФИО)
-                    \\end{tabular}
-                    \\end{flushright}
-                    
-                    \\end{document}
-                    """;
+            String fullName = askInputWithValidation("Введите ФИО полностью (например, Март Скуберт Олегович): ",
+                    "^[А-ЯЁ][а-яё]+(?:\\s[А-ЯЁ][а-яё]+){2}$",
+                    "Некорректный ввод имени!");
+            String groupNumber = askInputWithValidation("Введите вашу группу (например, P3132): ",
+                    "^[A-Z]\\d{4}$",
+                    "Некорректный ввод группы!");
+            String faculty = askInputWithValidation("Введите название факультета (например, КТ): ",
+                    "^[А-ЯЁа-яё\\-\\s]+$",
+                    "Некорректный ввод названия факультета!");
+            String phone = askInputWithValidation("Введите контактный телефон (например, +79313134585): ",
+                    "^\\+7\\d{10}$",
+                    "Некорректный ввод номера телефона!");
+            String email = askInputWithValidation("Введите email (например, example@yandex.ru): ",
+                    "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",
+                    "Некорректный ввод email!");
 
-            String day = askInput("Введите день (например, 30): ");
-            String month = askInput("Введите месяц (например, апреля): ");
-            String year = askInput("Введите год (последние две цифры, например, 26): ");
-            String fullName = askInput("Введите ФИО полностью (например, Март Скуберт Олегович): ");
-            String groupNumber = askInput("Введите номер группы (например, P3132): ");
-            String faculty = askInput("Введите название факультета/института (например, ПИиКт): ");
-            String phone = askInput("Введите контактный телефон (например, +79313134585): ");
-            String email = askInput("Введите email (например, student@yandex.ru): ");
-
-            String texContent = String.format(texTemplate,
-                    day, month, year,           // первая дата
-                    fullName, groupNumber, faculty, phone, email,  // данные студента
-                    day, month, year, fullName  // подпись и дата
-            );
+            String texContent = new DeductionCreating(fullName, groupNumber, faculty, phone, email).getTexFile();
             String currentDir = System.getProperty("user.dir");
 
             String timestamp = java.time.LocalDateTime.now()
                     .format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
             String texFileName = "application_" + timestamp + ".tex";
 
-            
             try {
                 Path texFilePath = Paths.get(currentDir, texFileName);
                 Files.writeString(texFilePath, texContent, java.nio.charset.StandardCharsets.UTF_8);
@@ -125,18 +65,6 @@ public class WriteDeduction implements Command {
         }
     }
 
-    private String askInput(String message) {
-        while (true) {
-            String input = reader.readLine(message).trim();
-
-            if (input.isEmpty()) {
-                System.out.println("Поле не может быть пустым!");
-                continue;
-            }
-            return input;
-        }
-    }
-
     private boolean isLaTeXInstalled() {
         try {
             Process process = Runtime.getRuntime().exec("which pdflatex");
@@ -148,6 +76,25 @@ public class WriteDeduction implements Command {
             return path != null && !path.trim().isEmpty();
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    private String askInputWithValidation(String prompt, String regex, String errorMessage) {
+        Pattern pattern = Pattern.compile(regex);
+
+        while (true) {
+            String input = reader.readLine(prompt).trim();
+
+            if (input.isEmpty()) {
+                System.out.println("Поле не может быть пустым!");
+                continue;
+            }
+
+            if (pattern.matcher(input).matches()) {
+                return input;
+            } else {
+                System.out.println("\u001B[31mОшибка\u001B[0m: " + errorMessage);
+            }
         }
     }
 
