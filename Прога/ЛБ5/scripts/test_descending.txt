@@ -1,0 +1,32 @@
+clear
+insert k1
+Лаба 1
+0
+0
+10.5
+-
+1
+HARD
+
+
+insert k2
+Лаба 2
+0
+0
+50.0
+-
+1
+HARD
+
+
+insert k3
+Лаба 3
+0
+0
+5.2
+-
+1
+HARD
+
+
+print_field_descending_minimal_point

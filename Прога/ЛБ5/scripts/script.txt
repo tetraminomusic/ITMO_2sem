@@ -1,0 +1,19 @@
+info
+show
+remove_key script_key_1
+gavrilovsay Это скрипт, йоу!
+insert script_key_1
+ЛабаИзСкрипта
+10
+20
+10
+Это описание из файла
+5
+HARD
+Антон Валерьевич
+10.10.2000
+185
+80.5
+PASSPORT_123
+show
+save

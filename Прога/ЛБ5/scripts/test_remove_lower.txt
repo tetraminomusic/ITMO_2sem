@@ -1,0 +1,32 @@
+clear
+insert item1
+Apple
+0
+0
+1
+-
+1
+HARD
+
+
+insert item2
+Cherry
+0
+0
+1
+-
+1
+HARD
+
+
+remove_lower
+Banana
+0
+0
+1
+-
+1
+HARD
+
+
+show

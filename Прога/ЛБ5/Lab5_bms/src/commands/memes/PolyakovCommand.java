@@ -1,17 +1,32 @@
-package commands;
+package commands.memes;
 
+import commands.Command;
 import managers.CollectionManager;
 
 import java.util.Random;
 
+/**
+ * Команда, которая выводит аргумент со случайным дублированием букв "к" и "п" (заикание).
+ *  @author Малых Кирилл Романович
+ *  @version 1.0
+ */
 public class PolyakovCommand implements Command {
-    private final CollectionManager collectionManager;
-    final int MAX_ADDITIONS = 7;
+    /**
+     * Максимальное количество дублирований "к" и "п".
+     */
+    private final int MAX_ADDITIONS = 7;
 
-    public PolyakovCommand(CollectionManager manager) {
-        this.collectionManager = manager;
+    /**
+     * Конструктор команды.
+     */
+    public PolyakovCommand() {
     }
 
+    /**
+     * Дублирование в строке букв "к" и "п".
+     * @param str исходная строка (или аргумент команды).
+     * @return преобразованная "заиканием" строка.
+     */
     private String lexicon(String str) {
         if (str == null || str.isEmpty()) {
             return str;
@@ -29,6 +44,10 @@ public class PolyakovCommand implements Command {
         return result.toString();
     }
 
+    /**
+     * Выполнение логики команды
+     * @param arg строка, в которой мы хотим сделать дублирование. Может быть null.
+     */
     @Override
     public void execute(String arg) {
         if (arg == null || arg.isEmpty()) {
@@ -38,6 +57,9 @@ public class PolyakovCommand implements Command {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getDescription() {
         return lexicon("Работает как команда echo из bash'a");

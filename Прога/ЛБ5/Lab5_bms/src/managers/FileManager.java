@@ -10,15 +10,35 @@ import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Scanner;
 
+/**
+ * Менеджер по взаимодействию с файлами. Например, запись или чтение.
+ * @author Малых Кирилл Романович
+ * @version 1.0
+ */
 public class FileManager {
+    /**
+     * Переменная окружения
+     */
     private String envVar;
+    /**
+     * Парсер для чтения и записи данных файла формата json.
+     */
     private Gson gson = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter()).create();
     // первый метод - чтобы json файл был читаемый, второй - чтобы он создался
 
+    /**
+     * Конструктор менеджера файлов.
+     * @param envVar переменная окружения.
+     */
     public FileManager(String envVar) {
         this.envVar = envVar;
     }
 
+    /**
+     * Записывает коллекцию в файл
+     * Предварительно проводит сериализацию коллекции в формат json.
+     * @param collection сама коллекция, которую хотим записать в файл.
+     */
     public void write(LinkedHashMap<String, LabWork> collection) {
         String path = System.getenv(envVar);
 
@@ -54,6 +74,11 @@ public class FileManager {
         }
     }
 
+    /**
+     * Чтение коллекции из файла. Производится автоматически при запуске консольного приложения.
+     * Проводит десериализацию данных json формата в коллекцию элементов.
+     * @return коллекцию, которая считалась из файла.
+     */
     public LinkedHashMap<String, LabWork> read() {
         String path = System.getenv(envVar);
 

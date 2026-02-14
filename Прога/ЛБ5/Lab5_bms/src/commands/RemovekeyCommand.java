@@ -2,13 +2,30 @@ package commands;
 
 import managers.CollectionManager;
 
+/**
+ * Команда, которая удаляет элемент коллекции по его ключу.
+ *
+ * @author Малых Кирилл Романович
+ * @version 1.0
+ */
 public class RemovekeyCommand implements Command {
+    /**
+     * Менеджер коллекции, из которого извлекается сама коллекция.
+     */
     private final CollectionManager collectionManager;
 
+    /**
+     * Конструктор команды.
+     * @param collectionManager менеджер коллекции, из которой извлекается сама коллекция
+     */
     public RemovekeyCommand(CollectionManager collectionManager) {
         this.collectionManager = collectionManager;
     }
 
+    /**
+     * Выполнение логики команды.
+     * @param arg аргумент команды, являющийся ID элемента, который мы хотим удалить из коллекции.
+     */
     @Override
     public void execute(String arg) {
         if (arg == null || arg.isEmpty()) {
@@ -24,6 +41,9 @@ public class RemovekeyCommand implements Command {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getDescription() {
         return "Удаляет элемент из коллекции по его ключу";

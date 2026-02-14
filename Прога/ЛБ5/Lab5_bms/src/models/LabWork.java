@@ -1,25 +1,96 @@
 package models;
 
+import java.time.LocalDateTime;
+
+/**
+ * Класс лабораторной работы.
+ * Реализует интерфейс {@link Comparable} для обеспечения сортировки по умолчанию по имени.
+ * Содержит информацию о названии, координатах, баллах и авторе работы.
+ *
+ * @author Малых Кирилл Романович
+ * @version 1.0
+ */
 public class LabWork implements Comparable<LabWork> {
-    private Integer id; //Поле не может быть null, Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
-    private String name; //Поле не может быть null, Строка не может быть пустой
-    private Coordinates coordinates; //Поле не может быть null
-    private java.time.LocalDateTime creationDate; //Поле не может быть null, Значение этого поля должно генерироваться автоматически
-    private float minimalPoint; //Значение поля должно быть больше 0
-    private String description; //Поле может быть null
-    private Integer tunedInWorks; //Поле может быть null
-    private Difficulty difficulty; //Поле не может быть null
-    private Person author; //Поле может быть null
+    /**
+     * Уникальный идентификатор работы.
+     * Поле не может быть null, значение должно быть больше 0, уникально и генерируется автоматически.
+     */
+    private Integer id;
 
-    //сортировка по умолчанию, ну пусть будет по имени
+    /**
+     * Название лабораторной работы.
+     * Поле не может быть null, строка не может быть пустой.
+     */
+    private String name;
 
+    /**
+     * Координаты работы.
+     * Поле не может быть null.
+     */
+    private Coordinates coordinates;
+
+    /**
+     * Дата и время создания объекта.
+     * Поле не может быть null, значение генерируется автоматически.
+     */
+    private LocalDateTime creationDate;
+
+    /**
+     * Минимальный балл за работу.
+     * Значение поля должно быть больше 0.
+     */
+    private float minimalPoint;
+
+    /**
+     * Описание работы.
+     * Поле может быть null.
+     */
+    private String description;
+
+    /**
+     * Количество настроенных работ.
+     * Поле может быть null.
+     */
+    private Integer tunedInWorks;
+
+    /**
+     * Сложность работы.
+     * Поле не может быть null.
+     */
+    private Difficulty difficulty;
+
+    /**
+     * Автор работы.
+     * Поле может быть null.
+     */
+    private Person author;
+
+    /**
+     * Сравнивает текущий объект с другим объектом типа LabWork.
+     * Сравнение происходит по алфавитному порядку названий работ.
+     *
+     * @param other объект для сравнения.
+     * @return отрицательное число, ноль или положительное число в зависимости от результата сравнения.
+     */
     @Override
     public int compareTo(LabWork other) {
         return this.name.compareTo(other.getName());
     }
 
-
-    public LabWork(Integer id, String name, Coordinates coordinates, java.time.LocalDateTime creationDate,
+    /**
+     * Конструктор для создания объекта лабораторной работы.
+     *
+     * @param id уникальный идентификатор.
+     * @param name название работы.
+     * @param coordinates координаты.
+     * @param creationDate дата создания.
+     * @param minimalPoint минимальный балл.
+     * @param description описание.
+     * @param tunedInWorks количество работ.
+     * @param difficulty сложность.
+     * @param author автор.
+     */
+    public LabWork(Integer id, String name, Coordinates coordinates, LocalDateTime creationDate,
                    float minimalPoint, String description, Integer tunedInWorks, Difficulty difficulty, Person author) {
         this.id = id;
         this.name = name;
@@ -32,25 +103,32 @@ public class LabWork implements Comparable<LabWork> {
         this.author = author;
     }
 
+    /**
+     * Возвращает строковое представление объекта лабораторной работы.
+     *
+     * @return строка с данными о ID, названии и баллах работы.
+     */
     @Override
     public String toString() {
         return "Labwork[id=" + id + ", name='" + name + "', point=" + minimalPoint + "]";
     }
 
-
-
+    /** @return уникальный идентификатор работы. */
     public Integer getId() {
         return id;
     }
 
+    /** @return название работы. */
     public String getName() {
         return name;
     }
 
+    /** @return минимальный балл. */
     public float getMinimalPoint() {
         return minimalPoint;
     }
 
+    /** @return сложность работы. */
     public Difficulty getDifficulty() {
         return difficulty;
     }

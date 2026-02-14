@@ -2,17 +2,32 @@ package commands;
 
 import managers.CollectionManager;
 import models.LabWork;
-
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Команда, которая группирует элементы коллекции по минимальным баллам и выводит их количество
+ * @author Малых Кирилл Романович
+ * @version 1.0
+ */
 public class GroupCountingByMinimalCommand  implements Command {
+    /**
+     * Менеджер коллекции, из которой извлекают саму коллекцию элементов
+     */
     private final CollectionManager collectionManager;
 
+    /**
+     * Конструктор команды
+     * @param collectionManager менеджер коллекции, из которой извлекают саму коллекцию элементов
+     */
     public GroupCountingByMinimalCommand(CollectionManager collectionManager) {
         this.collectionManager = collectionManager;
     }
 
+    /**
+     * Выполнение логики команды
+     * @param arg - аргумент команды. Не используется в данной команде.
+     */
     @Override
     public void execute(String arg) {
         Map<Float, Long> groups = collectionManager.getCollection().values().stream().collect(Collectors.groupingBy(LabWork::getMinimalPoint, Collectors.counting()));
@@ -24,6 +39,9 @@ public class GroupCountingByMinimalCommand  implements Command {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getDescription() {
         return "Группирует элементы коллекции по минимальным баллам и выводит их количество";

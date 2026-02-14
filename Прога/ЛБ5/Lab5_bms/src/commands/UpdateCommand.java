@@ -6,15 +6,36 @@ import models.LabWork;
 
 import java.util.Map;
 
+/**
+ * Команда, которая обновляет значение элемента по ключу.
+ *
+ * @author Малых Кирилл Романович
+ * @version 1.0
+ */
 public class UpdateCommand  implements Command{
+    /**
+     * Менеджер коллекции, из которого извлекается сама коллекция.
+     */
     private final CollectionManager collectionManager;
+    /**
+     * Интерфейс, который запрашивает данные и создаёт новый элемент коллекции.
+     */
     private final LabWorkAsker asker;
 
+    /**
+     * Конструктор команды.
+     * @param collectionManager менеджер коллекции, из которого извлекается сама коллекция
+     * @param asker интерфейс, который запрашивает данные и создаёт новый элемент коллекции
+     */
     public UpdateCommand(CollectionManager collectionManager, LabWorkAsker asker) {
         this.collectionManager = collectionManager;
         this.asker = asker;
     }
 
+    /**
+     * Выполнение логики команды.
+     * @param arg аргумент команды, являющийся ключом элемента, значение которого мы хотим обновить.
+     */
     @Override
     public void execute(String arg) {
         try {
@@ -37,6 +58,9 @@ public class UpdateCommand  implements Command{
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getDescription() {
         return "Обновляет значение элемента коллекции по ID";

@@ -1,0 +1,50 @@
+clear
+insert lab_10_1
+Первая Лаба
+10
+10
+10.0
+Описание 1
+1
+HARD
+Автор Один
+01.01.2000
+180
+75
+PASSPORT1
+
+insert lab_10_2
+Вторая Лаба
+20
+20
+10.0
+Описание 2
+2
+VERY_EASY
+Автор Два
+02.02.2000
+170
+65
+PASSPORT2
+
+insert lab_5_1
+Третья Лаба
+30
+30
+5.5
+Описание 3
+3
+HOPELESS
+Автор Три
+03.03.2000
+190
+90
+PASSPORT3
+
+group_counting_by_minimal_point
+
+remove_key lab_10_1
+remove_key lab_10_2
+remove_key lab_5_1
+
+

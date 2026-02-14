@@ -1,18 +1,36 @@
-package commands;
+package commands.memes;
 
+import commands.Command;
 import org.jline.reader.LineReader;
 import java.io.*;
 import java.nio.file.*;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
 
+/**
+ * Команда, которая запрашивает личные данные, и на основе их компилирует PDF-файл заявления об отчислении по собственному желанию.
+ *
+ * @author Малых Кирилл Романович
+ * @version 1.0
+ */
 public class WriteDeduction implements Command {
+    /**
+     * Считыватель данных из ввода пользователя в консольном приложении
+     */
     private final LineReader reader;
 
+    /**
+     * Конструктор команды
+     * @param reader считыватель данных из ввода пользователя в консольном приложении
+     */
     public WriteDeduction(LineReader reader) {
         this.reader = reader;
     }
 
+    /**
+     * Выполнение логики команды
+     * @param arg - не используется в данной команде
+     */
     @Override
     public void execute(String arg) {
         try {
@@ -65,6 +83,10 @@ public class WriteDeduction implements Command {
         }
     }
 
+    /**
+     * Проверяет наличие у пользователя компилятора pdflatex
+     * @return true, если компилятор установлен, в противном случае false
+     */
     private boolean isLaTeXInstalled() {
         try {
             Process process = Runtime.getRuntime().exec("which pdflatex");
@@ -79,6 +101,13 @@ public class WriteDeduction implements Command {
         }
     }
 
+    /**
+     * Создаёт шаблон ввода данных.
+     * @param prompt сообщение-приглашение для пользователя
+     * @param regex регулярное выражение для проверки на валидность введённых данных
+     * @param errorMessage сообщение об ошибке, если данные не прошли проверку на валидность
+     * @return введённые данные, если те прошли проверку на валидность
+     */
     private String askInputWithValidation(String prompt, String regex, String errorMessage) {
         Pattern pattern = Pattern.compile(regex);
 
@@ -98,6 +127,11 @@ public class WriteDeduction implements Command {
         }
     }
 
+    /**
+     * Компилирует Latex-документ в PDF-документ в заданной директории и в заданный файл
+     * @param outputDir выходная директория
+     * @param texFilePath название выходного файла
+     */
     private void compileToPdf(String outputDir, String texFilePath) {
         try {
             // Просто запускаем pdflatex для файла
@@ -138,6 +172,9 @@ public class WriteDeduction implements Command {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getDescription() {
         return "Создаёт pdf-файл с отчислением ПСЖ";

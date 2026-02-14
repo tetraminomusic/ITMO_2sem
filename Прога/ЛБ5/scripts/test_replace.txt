@@ -1,0 +1,22 @@
+clear
+insert my_key
+Алексей
+10
+10
+100
+Описание
+1
+HARD
+
+
+replace_if_greater my_key
+Яков
+20
+20
+200
+НовоеОписание
+2
+HOPELESS
+
+
+show

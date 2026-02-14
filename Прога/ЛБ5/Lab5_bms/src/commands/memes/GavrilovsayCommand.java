@@ -1,10 +1,18 @@
-package commands;
+package commands.memes;
 
+import commands.Command;
 import managers.CollectionManager;
 
+/**
+ * Команда, которая выводит ASCII изображение Гаврилова Антона Валерьевича с введённой фразе в "облаке".
+ *
+ * @author Малых Кирилл Романович
+ * @version 1.0
+ */
 public class GavrilovsayCommand implements Command {
-    private final CollectionManager collectionManager;
-
+    /**
+     * ASCII изображение лектора по программированию
+     */
     private final String Gavrilov_art = """
             sbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbG                                                   u             \s
             bMMMMMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKMMMAx eghiiiiiifglifg7WbN y T                           HAO8jhigegdjh\s
@@ -43,10 +51,17 @@ public class GavrilovsayCommand implements Command {
             bMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMA   qAA AAN  YAAAA      A       3AWZZ72323KDAz   hpZ       eAFRekd\s
             sbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbA      xf                k                                        \s 
                 """;
-    public GavrilovsayCommand(CollectionManager collectionManager) {
-        this.collectionManager = collectionManager;
+
+    /**
+     * Конструктор команды.
+     */
+    public GavrilovsayCommand() {
     }
 
+    /**
+     * Выполнение логики команды.
+     * @param argument строка, которую "скажет" Антон Валерьевич. Аргумент может быть null.
+     */
     @Override
     public void execute(String argument) {
         if (argument != null && !argument.isEmpty()) {
@@ -62,6 +77,9 @@ public class GavrilovsayCommand implements Command {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getDescription() {
         return "описание тут излишне";

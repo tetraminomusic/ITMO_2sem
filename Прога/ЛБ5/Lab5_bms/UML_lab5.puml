@@ -4,6 +4,14 @@ interface commands.Command {
 ~ String getDescription()
 }
 
+class commands.memes.PolyakovCommand {
+- int MAX_ADDITIONS
+- String lexicon(String)
++ void execute(String)
++ String getDescription()
+}
+
+
 class commands.GroupCountingByMinimalCommand {
 - CollectionManager collectionManager
 + void execute(String)
@@ -19,12 +27,20 @@ class managers.FileManager {
 }
 
 
-class commands.ExitCommand {
-- CollectionManager collectionManager
+class commands.memes.WriteDeduction {
+- LineReader reader
 + void execute(String)
+- boolean isLaTeXInstalled()
+- String askInputWithValidation(String,String,String)
+- void compileToPdf(String,String)
 + String getDescription()
 }
 
+
+class commands.ExitCommand {
++ void execute(String)
++ String getDescription()
+}
 
 class commands.CountLessThanDifficulty {
 - CollectionManager collectionManager
@@ -59,26 +75,26 @@ class managers.LocalDateTimeAdapter {
 + LocalDateTime deserialize(JsonElement,Type,JsonDeserializationContext)
 }
 
-class models.Person {
-- String name
-- java.time.LocalDateTime birthday
-- float height
-- Double weight
-- String passportID
-}
-
-class commands.GavrilovsayCommand {
-- CollectionManager collectionManager
+class commands.memes.GavrilovsayCommand {
 - String Gavrilov_art
 + void execute(String)
 + String getDescription()
 }
 
 
+class models.Person {
+- String name
+- LocalDateTime birthday
+- float height
+- Double weight
+- String passportID
+}
+
 class managers.CommandManager {
 - Map<String,Command> commands
 - List<String> history
 - LabWorkAsker asker
+- LineReader reader
 + void execute(String)
 - void addToHistory(String)
 + List<String> getHistory()
@@ -118,7 +134,7 @@ class models.LabWork {
 - Integer id
 - String name
 - Coordinates coordinates
-- java.time.LocalDateTime creationDate
+- LocalDateTime creationDate
 - float minimalPoint
 - String description
 - Integer tunedInWorks
@@ -141,6 +157,19 @@ class commands.InsertCommand {
 }
 
 
+class commands.memes.DeductionCreating {
+- String texTemplate
+- String fullname
+- String facility
+- String phone
+- String group
+- String email
+- LocalDate currentDate
++ String getTexFile()
+- String monthStringer()
+}
+
+
 class commands.ShowCommand {
 - CollectionManager collectionManager
 + void execute(String)
@@ -155,6 +184,9 @@ class Main {
 class managers.LabWorkAsker {
 - LineReader reader
 - Scanner scriptScanner
+- DateTimeFormatter formatter
+- {static} String RED
+- {static} String RESET
 + void setScriptScanner(Scanner)
 - String askString(String,boolean)
 - float askFloat(String,boolean)
@@ -229,7 +261,9 @@ class models.Coordinates {
 
 
 
+commands.Command <|.. commands.memes.PolyakovCommand
 commands.Command <|.. commands.GroupCountingByMinimalCommand
+commands.Command <|.. commands.memes.WriteDeduction
 commands.Command <|.. commands.ExitCommand
 commands.Command <|.. commands.CountLessThanDifficulty
 commands.Command <|.. commands.InfoCommand
@@ -237,7 +271,7 @@ commands.Command <|.. commands.ExecuteScriptCommand
 commands.Command <|.. commands.HelpCommand
 managers.JsonSerializer <|.. managers.LocalDateTimeAdapter
 managers.JsonDeserializer <|.. managers.LocalDateTimeAdapter
-commands.Command <|.. commands.GavrilovsayCommand
+commands.Command <|.. commands.memes.GavrilovsayCommand
 commands.Command <|.. commands.PrintFieldDescendingMinimalPointCommand
 commands.Command <|.. commands.HistoryCommand
 commands.Command <|.. commands.ClearCommand

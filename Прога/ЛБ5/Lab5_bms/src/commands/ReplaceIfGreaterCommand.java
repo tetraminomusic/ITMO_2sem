@@ -4,15 +4,36 @@ import managers.CollectionManager;
 import managers.LabWorkAsker;
 import models.LabWork;
 
+/**
+ * Команда, которая заменяет значение по ключу, если новое значение больше старого.
+ *
+ * @author Малых Кирилл Романович
+ * @version 1.0
+ */
 public class ReplaceIfGreaterCommand implements Command{
+    /**
+     * Менеджер коллекции, из которой извлекают саму коллекцию элементов.
+     */
     private final CollectionManager collectionManager;
+    /**
+     * Интерфейс запроса данных в консольном приложении для последующего создания элемента в коллекции.
+     */
     private final LabWorkAsker asker;
 
+    /**
+     * Конструктор команды
+     * @param collectionManager менеджер коллекции, из которой извлекают саму коллекцию элементов.
+     * @param asker интерфейс запроса данных в консольном приложении для последующего создания элемента в коллекции.
+     */
     public ReplaceIfGreaterCommand(CollectionManager collectionManager, LabWorkAsker asker) {
         this.collectionManager = collectionManager;
         this.asker = asker;
     }
 
+    /**
+     * Выполнение логики команды.
+     * @param arg аргумент команды, который является ключом элемента в коллекции.
+     */
     @Override
     public void execute(String arg) {
         if (arg == null || arg.isEmpty()) {
@@ -37,6 +58,9 @@ public class ReplaceIfGreaterCommand implements Command{
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getDescription() {
         return "Заменяет значение по ключу, если новое значение больше старого";

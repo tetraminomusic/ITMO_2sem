@@ -1,8 +1,17 @@
-package commands;
+package commands.memes;
 
 import java.time.LocalDate;
 
+/**
+ * Вёрстка tex-документа, где производится вставка личных данных в шаблон документа для последующей компиляции в команде WriteDeduction.
+ *
+ * @author Малых Кирилл Романович
+ * @version 1.0
+ */
 public class DeductionCreating {
+    /**
+     * Строка, хранящая tex-шаблон для последующей вставки вводимых личных данных.
+     */
     private String texTemplate = """
                     \\documentclass[a4paper,12pt]{article}
                     \\usepackage[utf8]{inputenc}
@@ -64,13 +73,39 @@ public class DeductionCreating {
                     
                     \\end{document}
                     """;
+    /**
+     * Строка, которая будет хранить ФИО студента.
+     */
     private String fullname;
+    /**
+     * Строка, хранящая название факультета, где числится студент.
+     */
     private String facility;
+    /**
+     * Строка, хранящая номер телефона студента.
+     */
     private String phone;
+    /**
+     * Строка, хранящая номер группы студента.
+     */
     private String group;
+    /**
+     * Строка, которая хранит электронную почту студента.
+     */
     private String email;
+    /**
+     * Поле, которое хранит текущее время.
+     */
     private LocalDate currentDate = LocalDate.now();
 
+    /**
+     * Конструктор верстальщика.
+     * @param fullname ФИО студента
+     * @param group группа студента
+     * @param facility факультет, где числится студент
+     * @param phone номер телефона студента
+     * @param email электронная почта студента
+     */
     public DeductionCreating(String fullname, String group, String facility, String phone, String email) {
         this.group = group;
         this.fullname = fullname;
@@ -79,6 +114,10 @@ public class DeductionCreating {
         this.email = email;
     }
 
+    /**
+     * Подстановка личных данных в шаблон Latex.
+     * @return итоговый tex-документ в строковом представлении.
+     */
     public String getTexFile() {
         int day = currentDate.getDayOfMonth();
         String month = monthStringer();
@@ -92,7 +131,10 @@ public class DeductionCreating {
         return texContent;
     }
 
-
+    /**
+     * Преобразует номер текущего месяца в строку на русском языке в родительном падеже.
+     * @return название месяца в родительном падеже (например, "января", "февраля").
+     */
     private String monthStringer() {
         int month = currentDate.getMonthValue();
         switch (month) {
