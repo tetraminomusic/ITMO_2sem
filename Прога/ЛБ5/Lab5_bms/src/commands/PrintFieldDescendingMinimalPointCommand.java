@@ -32,9 +32,9 @@ public class PrintFieldDescendingMinimalPointCommand  implements Command {
     @Override
     public void execute(String arg) {
         collectionManager.getCollection().values().stream()
-                .map(LabWork::getMinimalPoint) //оставляем только баллы
+                .map(labwork -> labwork.getMinimalPoint()) //оставляем только баллы
                 .sorted(Comparator.reverseOrder()) // сортируем по убыванию
-                .forEach(System.out :: println); // печатаем каждый элемент
+                .forEach(x -> System.out.println(x)); // печатаем каждый элемент
     }
 
     /**

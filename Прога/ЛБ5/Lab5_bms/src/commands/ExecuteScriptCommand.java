@@ -41,7 +41,7 @@ public class ExecuteScriptCommand implements Command{
 
         //используем для автоматического закрытия сканера
         try (Scanner scriptScanner = new Scanner(file)) {
-            //устанавливаем режим считывания данных на сканер за место ридера,
+            //устанавливаем режим считывания данных на сканер заместо ридера,
             commandManager.getAsker().setScriptScanner(scriptScanner);
             while (scriptScanner.hasNextLine()) {
                 String line = scriptScanner.nextLine();

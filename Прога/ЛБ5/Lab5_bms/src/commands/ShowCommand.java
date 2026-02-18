@@ -37,7 +37,7 @@ public class ShowCommand implements Command{
             return;
         }
         //когда мы вызываем value, мы вызываем метод to String, который мы переопределили
-        // TODO: разобраться в этом коде
+        //-> лямбда выражение
         collection.entrySet().stream().sorted(comparingByValue()).forEach(entry ->
                 System.out.println("Ключ: " + entry.getKey() + " | " + entry.getValue()));
     }

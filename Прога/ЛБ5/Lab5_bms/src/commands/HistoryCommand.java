@@ -45,7 +45,7 @@ public class HistoryCommand implements Command{
      */
     @Override
     public String getDescription() {
-        return "Вывводит список последних 14 использованных команд";
+        return "Выводит список последних 14 использованных команд";
     }
 
 

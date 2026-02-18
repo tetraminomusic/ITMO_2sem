@@ -72,6 +72,7 @@ public class LabWork implements Comparable<LabWork> {
      * @param other объект для сравнения.
      * @return отрицательное число, ноль или положительное число в зависимости от результата сравнения.
      */
+    //Логика сравнения двух лабораторных - алфавитный порядок по имени
     @Override
     public int compareTo(LabWork other) {
         return this.name.compareTo(other.getName());

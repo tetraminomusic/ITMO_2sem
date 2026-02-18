@@ -30,7 +30,8 @@ public class GroupCountingByMinimalCommand  implements Command {
      */
     @Override
     public void execute(String arg) {
-        Map<Float, Long> groups = collectionManager.getCollection().values().stream().collect(Collectors.groupingBy(LabWork::getMinimalPoint, Collectors.counting()));
+        //collect - терминальная операция, которая собирает элементы потока в Map
+        Map<Float, Long> groups = collectionManager.getCollection().values().stream().collect(Collectors.groupingBy(labWork -> labWork.getMinimalPoint(), Collectors.counting()));
 
         if (groups.isEmpty()) {
             System.out.println("Коллекция пуста");

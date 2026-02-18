@@ -94,9 +94,7 @@ public class FileManager {
         if (!file.exists()) {
             System.out.println("\u001B[31mОшибка\u001B[0m: Такого файла не существует! Будет создана пустая коллекция");
             return new LinkedHashMap<String, LabWork>();
-        }
-
-        if (file.exists()) {
+        } else {
             if (!file.canRead()) {
                 System.out.println("\u001B[31mОшибка\u001B[0m: Недостаточно прав на чтение файла " + path + ". Будет создана пустая коллекция");
                 return new LinkedHashMap<String, LabWork>();

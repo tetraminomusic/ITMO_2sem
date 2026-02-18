@@ -60,7 +60,11 @@ public class LabWorkAsker {
         if (scriptScanner != null && scriptScanner.hasNextLine()) {
             String res = scriptScanner.nextLine().trim();
             System.out.println(message + " " + res); // Визуализация чтения из скрипта
-            return (res.isEmpty() && nullable) ? null : res;
+            if (res.isEmpty() && nullable) {
+                return null;
+            } else {
+                return res;
+            }
         }
 
         while (true) {

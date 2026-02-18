@@ -1,6 +1,7 @@
 package commands.memes;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 
 /**
  * Вёрстка tex-документа, где производится вставка личных данных в шаблон документа для последующей компиляции в команде WriteDeduction.
@@ -131,6 +132,7 @@ public class DeductionCreating {
         return texContent;
     }
 
+    
     /**
      * Преобразует номер текущего месяца в строку на русском языке в родительном падеже.
      * @return название месяца в родительном падеже (например, "января", "февраля").

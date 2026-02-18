@@ -90,9 +90,7 @@ public class WriteDeduction implements Command {
     private boolean isLaTeXInstalled() {
         try {
             Process process = Runtime.getRuntime().exec("which pdflatex");
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream())
-            );
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String path = reader.readLine();
             process.waitFor();
             return path != null && !path.trim().isEmpty();
@@ -134,18 +132,18 @@ public class WriteDeduction implements Command {
      */
     private void compileToPdf(String outputDir, String texFilePath) {
         try {
-            // Просто запускаем pdflatex для файла
+            //просто запускаем pdflatex для файла
             String fileName = new File(texFilePath).getName();
 
-            // Меняем текущую директорию
+            //меняем текущую директорию
             Process process = Runtime.getRuntime().exec("pdflatex " + fileName, null, new File(outputDir));
 
-            // Просто ждем завершения
+            //просто ждем завершения
             int result = process.waitFor();
 
             if (result == 0) {
 
-                // Удаляем служебные файлы
+                //удаляем служебные файлы
                 String baseName = fileName.replace(".tex", "");
                 String[] extensions = {".aux", ".log", ".out"};
                 for (String ext : extensions) {
@@ -153,10 +151,8 @@ public class WriteDeduction implements Command {
                     Files.deleteIfExists(tempFile);
                 }
 
-                // Удаляем tex файл
                 Files.deleteIfExists(Paths.get(texFilePath));
 
-                // Переименовываем PDF в ПСЖ.pdf
                 Path sourcePdf = Path.of(outputDir, baseName + ".pdf");
                 Path targetPdf = Path.of(outputDir, "ПСЖ.pdf");
                 Files.move(sourcePdf, targetPdf, StandardCopyOption.REPLACE_EXISTING);

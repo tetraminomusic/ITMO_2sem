@@ -39,7 +39,7 @@ public class CollectionManager {
 
         Integer maxId = 0;
         for (LabWork laba: collection.values()) {
-            if (laba.getId() > maxId) {maxId = laba.getId();}
+            if (laba.getId() > maxId) maxId = laba.getId();
         }
         return maxId+1;
     }

@@ -44,7 +44,7 @@ public class UpdateCommand  implements Command{
             // TODO: Надо эту вещь заботать (стримы)
             String key = collectionManager.getCollection().entrySet().stream() //берём набор записей, превращаем в поток записей
                     .filter(entry -> entry.getValue().getId().equals(id)) // фильтруем по приципу: оставим только тот ID, который совпадает с моим
-                    .map(Map.Entry :: getKey) // достаём ключ этой записи
+                    .map(entry -> entry.getKey()) // достаём ключ этой записи
                     .findFirst().orElse(null); //берём первый, иначе ничего не берём
             if (key != null) {
                 LabWork updated = asker.createLabWork(id);

@@ -59,7 +59,7 @@ public class CommandManager {
         commands.put("replace_if_greater", new ReplaceIfGreaterCommand(collection, asker));
         commands.put("group_counting_by_minimal_point", new GroupCountingByMinimalCommand(collection));
         commands.put("count_less_difficulty", new CountLessThanDifficulty(collection));
-        commands.put("print_field_desceding_minimal_point", new PrintFieldDescendingMinimalPointCommand(collection));
+        commands.put("print_field_descending_minimal_point", new PrintFieldDescendingMinimalPointCommand(collection));
 
         //рофло-команды
         commands.put("gavrilovsay", new GavrilovsayCommand());
