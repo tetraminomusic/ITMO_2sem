@@ -72,4 +72,20 @@ public class Person {
         this.weight = weight;
         this.passportID = passportID;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+
+    public Double getWeight() {
+        return weight;
+    }
+
+    public CharSequence getPassportID() {
+        return passportID;
+    }
 }

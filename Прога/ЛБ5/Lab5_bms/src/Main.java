@@ -60,7 +60,7 @@ public class Main {
             while (true) {
                 String input;
                 try {
-                    input = lineReader.readLine("\u001B[32mКонсольТерминал@Что-то_заUмное:~₽\u001B[0m");
+                    input = lineReader.readLine("\u001B[32mКонсольТерминал@Что-то_заUмное:~₽\u001B[0m ");
                 } catch (EndOfFileException e) {
                     System.out.println("\nЗавершение работы программы...");
                     break;
@@ -71,8 +71,6 @@ public class Main {
 
                 if (input == null || input.trim().isEmpty()) continue;
                 commandManager.execute(input.trim());
-
-
             }
 
         } catch (Exception e) {

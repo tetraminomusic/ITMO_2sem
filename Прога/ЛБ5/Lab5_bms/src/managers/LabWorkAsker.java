@@ -5,6 +5,7 @@ import models.Difficulty;
 import models.LabWork;
 import models.Person;
 import org.jline.reader.LineReader;
+import org.jline.reader.UserInterruptException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -59,7 +60,7 @@ public class LabWorkAsker {
     private String askString(String message, boolean nullable) {
         if (scriptScanner != null && scriptScanner.hasNextLine()) {
             String res = scriptScanner.nextLine().trim();
-            System.out.println(message + " " + res); // Визуализация чтения из скрипта
+            System.out.println(message + " " + res);
             if (res.isEmpty() && nullable) {
                 return null;
             } else {
@@ -68,13 +69,17 @@ public class LabWorkAsker {
         }
 
         while (true) {
-            String input = reader.readLine(message + " ").trim();
-            if (input.isEmpty()) {
-                if (nullable) return null;
-                System.out.println(RED + "Ошибка: Поле не может быть пустым!" + RESET);
-                continue;
+            try {
+                String input = reader.readLine(message + " ").trim();
+                if (input.isEmpty()) {
+                    if (nullable) return null;
+                    System.out.println(RED + "Ошибка: Поле не может быть пустым!" + RESET);
+                    continue;
+                }
+                return input;
+            } catch (UserInterruptException e) {
+                System.out.println("\u001B[33mНе ломайте программу бедного студента, пожалуйста\u001B[0m");
             }
-            return input;
         }
     }
 
@@ -240,7 +245,7 @@ public class LabWorkAsker {
      * @return заполненный объект автора или null.
      */
     public Person askPerson() {
-        System.out.println("--- Ввод данных автора (Enter на имени, чтобы пропустить) ---");
+        System.out.println("Ввод данных автора (Enter на имени, чтобы пропустить) ---");
         String name = askString(" Имя автора:", true);
         if (name == null) return null;
 
@@ -259,7 +264,7 @@ public class LabWorkAsker {
      * @return полностью инициализированный объект лабораторной работы.
      */
     public LabWork createLabWork(Integer id) {
-        System.out.println("--- Создание лабораторной работы ---");
+        System.out.println("Создание лабораторной работы ---");
         String name = askString("Название лабораторной:", false);
         Coordinates coord = askCoordinates();
         float minPoint = askMinimalPoint();

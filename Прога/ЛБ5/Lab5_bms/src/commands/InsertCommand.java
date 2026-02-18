@@ -12,7 +12,7 @@ import models.LabWork;
  */
 public class InsertCommand implements Command{
     /**
-     * Менеджер коллекции, из которого извлекается сама коллекция.
+     * Менеджер коллекции, который управляет CRUD операциями.
      */
     private final CollectionManager collectionManager;
     /**
@@ -22,36 +22,45 @@ public class InsertCommand implements Command{
 
     /**
      * Конструктор команды.
-     * @param collectionManager менеджер коллекции, из которого извлекается сама коллекция
+     * @param collectionManager менеджер коллекции для выполнения операций
      * @param labWorkAsker интерфейс запроса данных и создания нового элемента коллекции
      */
     public InsertCommand(CollectionManager collectionManager, LabWorkAsker labWorkAsker) {
         this.collectionManager = collectionManager;
-        asker = labWorkAsker;
+        this.asker = labWorkAsker;
     }
 
     /**
      * Выполнение логики команды
-     * @param arg - аргумент команды, который является ID для нового элемента коллекции.
+     * @param arg - аргумент команды, который является ключом для нового элемента коллекции.
      */
     @Override
     public void execute(String arg) {
         if (arg == null || arg.isEmpty()) {
-            System.out.println("\u001B[31mОшибка\u001B[0m: Введите ключ (имя) для нового элемента");
+            System.out.println("\u001B[31mОшибка\u001B[0m: Введите ключ для нового элемента");
             return;
         }
 
-        if (collectionManager.getCollection().containsKey(arg)) {
-            System.out.println("\u001B[31mОшибка\u001B[0m: Элемент с ключом " + arg + " уже существует!");
+        //существует ли уже элемент с таким ключом через менеджер
+        if (collectionManager.containsKey(arg)) {
+            System.out.println("\u001B[31mОшибка\u001B[0m: Элемент с ключом \"" + arg + "\" уже существует!");
             return;
         }
 
+        //генерируем новый уникальный ID через менеджер
         Integer newId = collectionManager.generateNextId();
 
+        //создаём новый объект LabWork через Asker
         LabWork newLab = asker.createLabWork(newId);
 
-        collectionManager.getCollection().put(arg, newLab);
-        System.out.println("Элемент был успешно добавлен");
+        //ОБНОВА
+        boolean added = collectionManager.add(arg, newLab);
+
+        if (added) {
+            System.out.println("Элемент с ключом \"" + arg + "\" успешно добавлен в коллекцию");
+        } else {
+            System.out.println("\u001B[31mОшибка\u001B[0m: Не удалось добавить элемент");
+        }
     }
 
     /**
@@ -59,6 +68,6 @@ public class InsertCommand implements Command{
      */
     @Override
     public String getDescription() {
-        return "Добавляет новый элемент с заданным ключом";
+        return "insert null {element} : добавить новый элемент с заданным ключом";
     }
 }

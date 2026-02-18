@@ -111,7 +111,17 @@ public class LabWork implements Comparable<LabWork> {
      */
     @Override
     public String toString() {
-        return "Labwork[id=" + id + ", name='" + name + "', point=" + minimalPoint + "]";
+        return "Labwork[\n" +
+                "  id = " + id + ",\n" +
+                "  name = '" + name + "',\n" +
+                "  minimalPoint = " + minimalPoint + ",\n" +
+                "  difficulty = " + difficulty + ",\n" +
+                "  coordinates = " + coordinates + ",\n" +
+                "  creationDate = " + creationDate.format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")) + ",\n" +
+                "  description = '" + (description != null ? description : "null") + "',\n" +
+                "  tunedInWorks = " + (tunedInWorks != null ? tunedInWorks : "null") + ",\n" +
+                "  author = " + (author != null ? author.getName() : "null") + "\n" +
+                "]";
     }
 
     /** @return уникальный идентификатор работы. */
@@ -132,5 +142,13 @@ public class LabWork implements Comparable<LabWork> {
     /** @return сложность работы. */
     public Difficulty getDifficulty() {
         return difficulty;
+    }
+
+    public Coordinates getCoordinates() {
+        return coordinates;
+    }
+
+    public Person getAuthor() {
+        return author;
     }
 }
