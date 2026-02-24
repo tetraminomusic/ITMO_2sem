@@ -42,7 +42,7 @@ public class Main {
                     "help", "info", "show", "insert", "update", "remove_key",
                     "clear", "save", "execute_script", "exit", "history", "gavrilovsay",
                     "group_counting_by_minimal","print_field_descending_minimal_point",
-                    "remove_lover", "replace_if_greater", "count_less_than_difficulty", "polyakov", "write_ПСЖ");
+                    "remove_lower", "replace_if_greater", "count_less_than_difficulty", "polyakov", "write_ПСЖ");
 
             LineReader lineReader = LineReaderBuilder.builder().terminal(terminal).completer(completer).build();
 
