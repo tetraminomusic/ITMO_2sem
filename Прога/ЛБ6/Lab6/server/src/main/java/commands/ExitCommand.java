@@ -1,12 +1,14 @@
 package commands;
 
-import managers.CollectionManager;
+import network.Request;
+import network.Response;
 
 /**
- * Команда, которая осуществляет выход из консольного приложения.
+ * Команда, которая осуществляет выход из консольного приложения (Устарело).
  *
  * @author Малых Кирилл Романович
  * @version 1.0
+ * @deprecated Данная команда используется только на стороне клиента
  */
 public class ExitCommand implements Command {
     /**
@@ -14,15 +16,13 @@ public class ExitCommand implements Command {
      */
     public ExitCommand() {
     }
-
     /**
      * Выполнение логики команды.
-     * @param arg аргумент команды. Не используется в данной команде.
+     * @param response аргумент команды. Не используется в данной команде.
      */
     @Override
-    public void execute(String arg) {
-        System.out.println("Завершение работы программы...");
-        System.exit(0);
+    public Response execute(Request request) {
+        return new Response("Завершение работы программы", true);
     }
 
     /**

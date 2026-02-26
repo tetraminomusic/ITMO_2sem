@@ -2,12 +2,15 @@ package commands;
 
 import managers.CollectionManager;
 import managers.FileManager;
+import network.Request;
+import network.Response;
 
 /**
  * Команда, которая сохраняет коллекцию в файл.
  *
  * @author Малых Кирилл Романович
  * @version 1.0
+ * @deprecated Сохранением занимается сервер при закрытии приложения
  */
 public class SaveCommand implements Command{
     /**
@@ -31,11 +34,12 @@ public class SaveCommand implements Command{
 
     /**
      * Выполнение логики команды
-     * @param arg аргумент команды. Не используется в данной команде.
+     * @param request аргумент команды. Не используется в данной команде.
      */
     @Override
-    public void execute(String arg) {
+    public Response execute(Request request) {
         fileManager.write(collectionManager.getCollection());
+        return null;
     }
 
     /**

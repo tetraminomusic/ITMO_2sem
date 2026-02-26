@@ -1,8 +1,9 @@
 package commands;
 
 import managers.CollectionManager;
-import managers.LabWorkAsker;
 import models.LabWork;
+import network.Request;
+import network.Response;
 
 /**
  * Команда, которая заменяет значение по ключу, если новое значение больше старого.
@@ -15,46 +16,43 @@ public class ReplaceIfGreaterCommand implements Command{
      * Менеджер коллекции, из которой извлекают саму коллекцию элементов.
      */
     private final CollectionManager collectionManager;
-    /**
-     * Интерфейс запроса данных в консольном приложении для последующего создания элемента в коллекции.
-     */
-    private final LabWorkAsker asker;
 
     /**
      * Конструктор команды
      * @param collectionManager менеджер коллекции, из которой извлекают саму коллекцию элементов.
-     * @param asker интерфейс запроса данных в консольном приложении для последующего создания элемента в коллекции.
      */
-    public ReplaceIfGreaterCommand(CollectionManager collectionManager, LabWorkAsker asker) {
+    public ReplaceIfGreaterCommand(CollectionManager collectionManager) {
         this.collectionManager = collectionManager;
-        this.asker = asker;
     }
 
     /**
      * Выполнение логики команды.
-     * @param arg аргумент команды, который является ключом элемента в коллекции.
+     * @param request аргумент команды, который является ключом элемента в коллекции.
      */
     @Override
-    public void execute(String arg) {
+    public Response execute(Request request) {
+        String arg = request.getArgument();
         if (arg == null || arg.isEmpty()) {
-            System.out.println("\u001B[31mОшибка\u001B[0m: Введите ключ после названия команды!");
-            return;
+            return new Response("\u001B[31mОшибка\u001B[0m: Введите ключ после названия команды!", false);
         }
 
         if (!collectionManager.getCollection().containsKey(arg)) {
-            System.out.println("\u001B[31mОшибка\u001B[0m: Элемент с ключом " + arg + " не найден!");
-            return;
+            return new Response("\u001B[31mОшибка\u001B[0m: Элемент с ключом " + arg + " не найден!", false);
         }
 
-        LabWork newElement = asker.createLabWork(collectionManager.generateNextId());
+        LabWork newElement = request.getObjectArgument();
+        if (newElement == null) {
+            return new Response("\u001B[31mОшибка\u001B[0m: Клиент не прислал элемент для замены", false);
+        }
         LabWork oldElement = collectionManager.getCollection().get(arg);
 
         // Сравнение относительно имен (поменять можно в классе LabWork)
         if (newElement.compareTo(oldElement) > 0) {
+            newElement.setID(collectionManager.generateNextId());
             collectionManager.getCollection().put(arg, newElement);
-            System.out.println("Новый элемент больше старого - Замена произведена!");
+            return new Response("Новый элемент больше старого - Замена произведена!", true);
         } else {
-            System.out.println("Новый элемент меньше старого - Замена не произведена!");
+            return new Response("Новый элемент меньше старого - Замена не произведена!", true);
         }
     }
 

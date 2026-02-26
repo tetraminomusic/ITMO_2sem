@@ -1,13 +1,14 @@
 plugins {
     id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow'
 }
 
+application {
+    mainClass = 'ServerMain'
+}
 group = 'Unona_Games'
 version = '1.0'
-
-repositories {
-    mavenCentral()
-}
 
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
@@ -23,6 +24,18 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:2.0.12'
 }
 
-test {
-    useJUnitPlatform()
+shadowJar {
+    archiveBaseName.set('server')
+    archiveClassifier.set('all')
+    archiveVersion.set('')
+    destinationDirectory = file("\\\\wsl.localhost\\Ubuntu\\home\\tetramino\\lab6")
+
+    doLast {
+        copy {
+            from archiveFile
+            into file("C:/Users/user/Desktop/ITMO_2sem/Прога/ЛБ6")
+        }
+        println "JAR успешно скопирован в директорию Windows и WSL."
+    }
+
 }

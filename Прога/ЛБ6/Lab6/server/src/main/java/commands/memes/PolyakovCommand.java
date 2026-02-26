@@ -2,6 +2,8 @@ package commands.memes;
 
 import commands.Command;
 import managers.CollectionManager;
+import network.Request;
+import network.Response;
 
 import java.util.Random;
 
@@ -46,14 +48,15 @@ public class PolyakovCommand implements Command {
 
     /**
      * Выполнение логики команды
-     * @param arg строка, в которой мы хотим сделать дублирование. Может быть null.
+     * @param request строка, в которой мы хотим сделать дублирование. Может быть null.
      */
     @Override
-    public void execute(String arg) {
+    public Response execute(Request request) {
+        String arg = request.getArgument();
         if (arg == null || arg.isEmpty()) {
-            System.out.println(lexicon("Надо что-то написать в аргумент моей команды..."));
+            return new Response(lexicon("Надо что-то написать в аргумент моей команды..."), true);
         } else {
-            System.out.println(lexicon(arg));
+            return new Response(lexicon(arg), true);
         }
     }
 

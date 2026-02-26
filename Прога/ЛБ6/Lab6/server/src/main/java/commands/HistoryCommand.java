@@ -1,6 +1,8 @@
 package commands;
 
 import managers.CommandManager;
+import network.Request;
+import network.Response;
 
 import java.util.List;
 
@@ -26,17 +28,20 @@ public class HistoryCommand implements Command{
 
     /**
      * Выполнение логики команды
-     * @param arg входной параметр. Не используется в данной команде
+     * @param request входной параметр. Не используется в данной команде
      */
     @Override
-    public void execute(String arg) {
+    public Response execute(Request request) {
         if (history.isEmpty()) {
-            System.out.println("История команд пуста!");
+            return new Response("История команд пуста!", true);
         } else {
-            System.out.println("Список последних использованных команд:");
+            StringBuilder result = new StringBuilder();
+            result.append("Список последних использованных команд:\n");
             for (String cmd : history) {
-                System.out.println("- " + cmd);
+                result.append("- " + cmd).append("\n");
             }
+
+            return new Response(result.toString(), true);
         }
     }
 

@@ -1,8 +1,9 @@
 package commands;
 
 import managers.CollectionManager;
-import managers.LabWorkAsker;
 import models.LabWork;
+import network.Request;
+import network.Response;
 
 /**
  * Команда, которая удаляет все элементы из коллекции, меньше заданного.
@@ -16,30 +17,27 @@ public class RemoveLowerCommand implements Command{
      */
     private final CollectionManager collectionManager;
     /**
-     * Интерфейс запроса данных в консольном приложении для последующего создания элемента в коллекции.
-     */
-    private final LabWorkAsker asker;
-
-    /**
      * Конструктор команды
      * @param collectionManager менеджер коллекции, из которой извлекают саму коллекцию элементов
-     * @param asker интерфейс запроса данных в консольном приложении для последующего создания элемента в коллекции.
      */
-    public RemoveLowerCommand(CollectionManager collectionManager, LabWorkAsker asker) {
+    public RemoveLowerCommand(CollectionManager collectionManager) {
         this.collectionManager = collectionManager;
-        this.asker = asker;
     }
 
     /**
      * Выполнение логики команды.
-     * @param arg аргумент команды. Не используется в данном методе.
+     * @param request аргумент команды. Не используется в данном методе.
      */
     @Override
-    public void execute(String arg) {
+    public Response execute(Request request) {
         System.out.println("Создание временного объекта-эталона для сравнения:");
 
         //ставим нулевой айдишник, так как сам элемент не будет входить в коллекцию
-        LabWork ref = asker.createLabWork(0);
+        LabWork ref = request.getObjectArgument();
+
+        if (ref == null) {
+            return new Response("\u001B[31mОшибка\u001B[0m: Клиент не прислал объект для сравнения.", false);
+        }
 
         int sizeBefore = collectionManager.getCollection().size();
 
@@ -47,8 +45,7 @@ public class RemoveLowerCommand implements Command{
 
         int removedCount = sizeBefore - collectionManager.getCollection().size();
 
-        System.out.println("Команда выполнена успешно: Было удалено " + removedCount + " элементов!");
-
+        return new Response("Команда выполнена успешно: Было удалено " + removedCount + " элементов!", true);
     }
 
     /**

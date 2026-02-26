@@ -1,23 +1,16 @@
 import managers.LabWorkAsker;
 
+import managers.UDPClient;
 import models.LabWork;
-import network.Request;
-import network.Response;
-import network.SerializationUtils;
-import org.jline.reader.EndOfFileException;
-import org.jline.reader.LineReader;
-import org.jline.reader.LineReaderBuilder;
-import org.jline.reader.UserInterruptException;
+import network.*;
+import org.jline.reader.*;
 import org.jline.reader.impl.completer.StringsCompleter;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketTimeoutException;
+import java.net.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,49 +24,64 @@ import java.util.List;
  * @version 1.0
  */
 public class ClientMain {
-
-    private static final int PORT = 12345;
-    private static final String HOST = "localhost";
-
-    private static final List<String> OBJECT_COMMANDS = Arrays.asList("insert", "update", "remove_lower", "replace_if_greater");
+    /**
+     * Константа-адрес сервера
+     */
+    private static final String SERVER_HOST = "localhost";
+    /**
+     * Константа-номер порта сервера
+     */
+    private static final int SERVER_PORT = 12345;
+    /**
+     * Список команд, во время которых создаётся новый объект для коллекции
+     */
+    private static final List<String> COMMANDS_WITH_OBJECT = Arrays.asList(
+            "insert", "update", "replace_if_greater", "remove_lower"
+    );
 
     /**
      * Точка входа в программу.
-     * <p>В методе происходит:</p>
-     * <ul>
-     *     <li>Настройка терминала и автодополнения (JLine).</li>
-     *     <li>Загрузка коллекции из JSON-файла (путь берется из переменной окружения LAB_DATA_PATH).</li>
-     *     <li>Запуск Read-Eval-Print Loop (REPL) для взаимодействия с пользователем.</li>
-     * </ul>
-     *
-     * @param args аргументы командной строки (в данной программе не используются).
+     * Инициализирует терминал, считывает ввод, создаёт запрос и отправляет серверу.
      */
     public static void main(String[] args) {
-        System.out.println("Добро пожаловать в приложение LabWork!");
-        try (DatagramSocket socket = new DatagramSocket()) {
 
-            socket.setSoTimeout(3000);
-            InetAddress address = InetAddress.getByName(HOST);
 
+
+        UDPClient updClient;
+
+        try {
+            //подключаем сетевое ядро
+            updClient = new UDPClient(SERVER_HOST, SERVER_PORT);
+        } catch (SocketException | UnknownHostException e) {
+            System.err.println("\u001B[31mОшибка:\u001B[0m" + e.getMessage());
+            return;
+        }
+
+        try {
             Terminal terminal = TerminalBuilder.builder().system(true).build();
             StringsCompleter completer = new StringsCompleter(
                     "help", "info", "show", "insert", "update", "remove_key",
-                    "clear", "save", "execute_script", "exit", "history", "gavrilovsay",
-                    "group_counting_by_minimal","print_field_descending_minimal_point",
-                    "remove_lover", "replace_if_greater", "count_less_than_difficulty", "polyakov", "write_ПСЖ");
+                    "clear", "execute_script", "exit", "history", "gavrilovsay",
+                    "group_counting_by_minimal_point","print_field_descending_minimal_point",
+                    "remove_lower", "replace_if_greater", "count_less_than_difficulty", "polyakov", "псж");
 
             LineReader lineReader = LineReaderBuilder.builder().terminal(terminal).completer(completer).build();
 
             LabWorkAsker asker = new LabWorkAsker(lineReader);
 
+            ExecuteScriptCommand scriptExecutor = new ExecuteScriptCommand(updClient, asker, COMMANDS_WITH_OBJECT);
 
-            //обработка ввода
             while (true) {
+
+
+
+
+
                 String input;
                 try {
-                    input = lineReader.readLine("\u001B[32mКонсоль,ноУжеКлиент@Что-то_заUмное:~₽\u001B[0m ");
+                    input = lineReader.readLine("\u001B[32mКонсольНоУжеКлиент@Что-то_заUмное2:~₽\u001B[0m ");
                 } catch (EndOfFileException e) {
-                    System.out.println("\nЗавершение работы клиента...");
+                    System.out.println("\nЗавершение работы программы...");
                     break;
                 } catch (UserInterruptException e) {
                     System.out.println("\u001B[33mНе ломайте программу бедного студента, пожалуйста\u001B[0m");
@@ -81,59 +89,83 @@ public class ClientMain {
                 }
 
                 if (input == null || input.trim().isEmpty()) continue;
-
                 String[] tokens = input.trim().split("\\s+", 2);
-                String command = tokens[0].toLowerCase();
-                String arg;
+                String commandName = tokens[0].toLowerCase();
+                String argument;
                 if (tokens.length > 1) {
-                    arg = tokens[1];
+                    argument = tokens[1];
                 } else {
-                    arg = "";
+                    argument = "";
                 }
 
-                if (command == "exit") {
-                    System.out.println("Завершение работы клиента");
+                if (commandName.equals("exit")) {
+                    try {
+                        updClient.sendRequest(new Request("exit", "", null));
+                    } catch (IOException e) {
+
+                    }
+                    System.out.println("Завершение работы...");
                     break;
                 }
+                if (commandName.equals("save")) {
+                    System.out.println("\u001B[31mОшибка:\u001B[0m Команда 'save' доступна только на сервере.");
+                    continue; // Пропускаем итерацию цикла, не отправляем запрос
+                }
+                if (commandName.equals("execute_script")) {
+                    try {
+                        updClient.sendRequest(new Request("execute_script", argument, null));
+                        updClient.receiveResponse();
 
-
-                Request request = null;
-
-                //либо команда ориентирована на отправку лабы, либо она взаимодействует с данным на серваке
-                try {
-                    if (OBJECT_COMMANDS.contains(command)) {
-                        LabWork lab = asker.createLabWork(0);
-                        request = new Request(command, arg, lab);
-                    } else {
-                        request = new Request(command, arg, null);
+                        scriptExecutor.execute(argument);
+                    } catch (IOException e) {
+                        System.out.println("\u001B[31mОшибка:\u001B[0m связь неисправна при запуске скрипта");
                     }
+                    continue;
+                }
 
-                    byte[] sendData = SerializationUtils.serialize(request);
+                Request request;
+                try {
+                    if (COMMANDS_WITH_OBJECT.contains(commandName)) {
+                        System.out.println("Команда '" + commandName + "' требует дополнительного ввода данных.");
+                        LabWork labWork = asker.createLabWork(0);
+                        request = new Request(commandName, argument, labWork);
+                    } else {
+                        request = new Request(commandName, argument, null);
+                    }
+                } catch (Exception e) {
+                    System.out.println("\u001B[31mОшибка при формировании данных:\u001B[0m " + e.getMessage());
+                    continue;
+                }
 
-                    DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, address, PORT);
-                    socket.send(sendPacket);
-
-                    byte[] receiveBuffer = new byte[65536];
-                    DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
-
-                    socket.receive(receivePacket);
-                    Response response = (Response) SerializationUtils.deserialize(receivePacket.getData());
-
-                    if (response.isSuccess()) {
+                //////////////////////////////////////////////////////////////////////////////////////////////////////
+                try {
+                    updClient.sendRequest(request);
+                    Response response = updClient.receiveResponse();
+                    if (response.getSuccess()) {
                         System.out.println(response.getMessage());
                     } else {
-                        System.out.println("Сервер " + response.getMessage());
+                        System.out.println("\u001B[31mОшибка:\u001B[0m " + response.getMessage());
                     }
 
                 } catch (SocketTimeoutException e) {
-                    System.out.println("\u001B[31mОшибка:\u001B[0m Сервер временно недоступен. Попробуйте позже.");
-                } catch (IOException | ClassNotFoundException e) {
-                    System.out.println("\u001B[31mОшибка сети:\u001B[0m " + e.getMessage());
+                    System.out.println("\u001B[31mСетевая ошибка:\u001B[0m Сервер не ответил в течение 3 секунд.");
+                } catch (PortUnreachableException e) {
+                    System.out.println("\u001B[31mСетевая ошибка:\u001B[0m Порт сервера недоступен.");
+                } catch (IOException e) {
+                    System.out.println("\u001B[31mОшибка ввода/вывода при обмене по сети:\u001B[0m " + e.getMessage());
                 }
             }
-
+        } catch (IllegalArgumentException e) {
+            System.out.println("\u001B[31mОшибка инициализации интерфейса:\u001B[0m " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("\u001B[31mСистемная ошибка ввода-вывода (терминал не поддерживается):\u001B[0m " + e.getMessage());
         } catch (Exception e) {
-            System.err.println("Критическая \u001B[31mОшибка\u001B[0m: " + e.getMessage());
+            System.out.println("\u001B[31mНепредвиденная ошибка клиента:\u001B[0m " + e.toString());
+            e.printStackTrace();
+        } finally {
+            if (updClient != null) {
+                updClient.close();
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 package models;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -10,7 +11,10 @@ import java.time.LocalDateTime;
  * @author Малых Кирилл Романович
  * @version 1.0
  */
-public class LabWork implements Comparable<LabWork> {
+public class LabWork implements Comparable<LabWork>, Serializable {
+
+    private static final long serialVersionUID = 1234L;
+
     /**
      * Уникальный идентификатор работы.
      * Поле не может быть null, значение должно быть больше 0, уникально и генерируется автоматически.
@@ -75,7 +79,7 @@ public class LabWork implements Comparable<LabWork> {
     //Логика сравнения двух лабораторных - алфавитный порядок по имени
     @Override
     public int compareTo(LabWork other) {
-        return this.name.compareTo(other.getName());
+        return this.getCoordinates().compareTo(other.getCoordinates());
     }
 
     /**
@@ -144,14 +148,24 @@ public class LabWork implements Comparable<LabWork> {
         return difficulty;
     }
 
+    /**
+     * @return координаты
+     */
     public Coordinates getCoordinates() {
         return coordinates;
     }
 
+    /**
+     * @return имя автора
+     */
     public Person getAuthor() {
         return author;
     }
 
+    /**
+     * Устанавливает уникальный ID (Используется в командах insert и update)
+     * @param integer уникальный номер
+     */
     public void setID(Integer integer) {
         this.id = integer;
     }

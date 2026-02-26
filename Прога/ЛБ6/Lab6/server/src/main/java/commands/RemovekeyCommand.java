@@ -1,6 +1,8 @@
 package commands;
 
 import managers.CollectionManager;
+import network.Request;
+import network.Response;
 
 /**
  * Команда, которая удаляет элемент коллекции по его ключу.
@@ -24,20 +26,19 @@ public class RemovekeyCommand implements Command {
 
     /**
      * Выполнение логики команды.
-     * @param arg аргумент команды, являющийся ID элемента, который мы хотим удалить из коллекции.
+     * @param request аргумент команды, являющийся ID элемента, который мы хотим удалить из коллекции.
      */
     @Override
-    public void execute(String arg) {
+    public Response execute(Request request) {
+        String arg = request.getArgument();
         if (arg == null || arg.isEmpty()) {
-            System.out.println("\u001B[31mОшибка\u001B[0m: введите ключ после названия команды!");
-            return;
+            return new Response("\u001B[31mОшибка\u001B[0m: введите ключ после названия команды!", false);
         }
         if (collectionManager.getCollection().containsKey(arg)) {
             collectionManager.getCollection().remove(arg);
-            System.out.println("Элемент с ключом " + arg + " был успешно удалён");
+            return new Response("Элемент с ключом " + arg + " был успешно удалён", true);
         } else {
-            System.out.println("\u001B[31mОшибка\u001B[0m: элемент с ключом " + arg + " не был найден!");
-
+            return new Response("\u001B[31mОшибка\u001B[0m: элемент с ключом " + arg + " не был найден!", false);
         }
     }
 

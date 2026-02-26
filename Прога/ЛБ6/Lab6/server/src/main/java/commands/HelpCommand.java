@@ -1,6 +1,8 @@
 package commands;
 
 import managers.CollectionManager;
+import network.Request;
+import network.Response;
 
 import java.util.Map;
 
@@ -25,11 +27,17 @@ public class HelpCommand implements Command{
 
     /**
      * Выполнение логики команды.
-     * @param arg аргумент команды. Не используется в данной команде.
+     * @param request аргумент команды. Не используется в данной команде.
      */
     @Override
-    public void execute(String arg) {
-        commands.forEach((name, command) -> System.out.printf("%-36s | %s%n", name, command.getDescription()));
+    public Response execute(Request request) {
+        StringBuilder result = new StringBuilder();
+        commands.forEach((name, command) -> {
+            //String.format делает то же самое, что и printf, только возвращает строку
+            String line = String.format("%-36s | %s%n", name, command.getDescription());
+            result.append(line);
+        });
+        return new Response(result.toString(), true);
     }
 
     /**

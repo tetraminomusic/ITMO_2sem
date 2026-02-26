@@ -2,6 +2,8 @@ package commands;
 
 import managers.CollectionManager;
 import models.Difficulty;
+import network.Request;
+import network.Response;
 
 /**
  * Команда, выводящая количество элементов, значение поля difficulty которых меньше заданного
@@ -23,13 +25,13 @@ public class CountLessThanDifficulty implements Command{
 
     /**
      * Выполнение логики команды
-     * @param arg строковое представление сложности (константа из enum Difficulty)
+     * @param request строковое представление сложности (константа из enum Difficulty)
      */
     @Override
-    public void execute(String arg) {
+    public Response execute(Request request) {
+        String arg = request.getArgument();
         if (arg == null || arg.isEmpty()) {
-            System.out.println("\u001B[31mОшибка\u001B[0m: Введите значение сложности из списка: VERY_EASY, HARD, HOPELESS");
-            return;
+            return new Response("\u001B[31mОшибка\u001B[0m: Введите значение сложности из списка: VERY_EASY, HARD, HOPELESS", false);
         }
 
         try {
@@ -38,9 +40,9 @@ public class CountLessThanDifficulty implements Command{
             long count = collectionManager.getCollection().values().stream()
                     .filter(lw -> lw.getDifficulty().ordinal() < target.ordinal())
                     .count();
-            System.out.println("Количество элементов со сложностью ниже + " + target + ": " + count);
+            return new Response("Количество элементов со сложностью ниже + " + target + ": " + count, true);
         } catch (IllegalArgumentException e) {
-            System.out.println("\u001B[31mОшибка\u001B[0m: Такой сложности не существует в списке!");
+            return new Response("\u001B[31mОшибка\u001B[0m: Такой сложности не существует в списке!", false);
         }
     }
 

@@ -1,24 +1,36 @@
 plugins {
     id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow'
 }
 
+application {
+    mainClass = "ClientMain"
+}
 group = 'Unona_Games'
 version = '1.0'
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
+    implementation project(':common')
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-    implementation project(':common')
-
     implementation 'org.jline:jline:3.25.1'
 }
 
-test {
-    useJUnitPlatform()
+shadowJar {
+    archiveBaseName.set('client')
+    archiveClassifier.set('all')
+    archiveVersion.set('')
+    destinationDirectory = file("\\\\wsl.localhost\\Ubuntu\\home\\tetramino\\lab6")
+
+    doLast {
+        copy {
+            from archiveFile
+            // Используй обычные косые черты (/) — Java и Gradle их отлично понимают в Windows,
+            // и тебе не придется мучиться с двойными обратными слешами.
+            into file("C:/Users/user/Desktop/ITMO_2sem/Прога/ЛБ6")
+        }
+        println "JAR успешно скопирован в директорию Windows и WSL."
+    }
 }

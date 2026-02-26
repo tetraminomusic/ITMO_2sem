@@ -1,5 +1,7 @@
 package models;
 
+import java.io.Serializable;
+
 /**
  * Класс координат объекта.
  * Содержит данные о положении лабораторной работы в пространстве.
@@ -7,7 +9,9 @@ package models;
  * @author Малых Кирилл Романович
  * @version 1.0
  */
-public class Coordinates {
+public class Coordinates implements Serializable {
+
+    private static final long serialVersionUID = 1234L;
     /**
      * Координата X.
      * Максимальное значение поля: 162. Поле не может быть null.
@@ -42,5 +46,20 @@ public class Coordinates {
     @Override
     public String toString() {
         return "x=" + x + ", y=" + y;
+    }
+
+    /**
+     * Метод, использующийся для сортировки объектов внутри коллекций по местоположению (по координатам)
+     * @param other
+     * @return
+     */
+    public int compareTo(Coordinates other) {
+        if (other == null) return 1;
+
+        double distThis = Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
+
+        double distOther = Math.sqrt(Math.pow(other.x, 2) + Math.pow(other.y, 2));
+
+        return Double.compare(distThis, distOther);
     }
 }

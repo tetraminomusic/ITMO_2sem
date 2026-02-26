@@ -2,6 +2,8 @@ package commands.memes;
 
 import commands.Command;
 import managers.CollectionManager;
+import network.Request;
+import network.Response;
 
 /**
  * Команда, которая выводит ASCII изображение Гаврилова Антона Валерьевича с введённой фразе в "облаке".
@@ -60,20 +62,21 @@ public class GavrilovsayCommand implements Command {
 
     /**
      * Выполнение логики команды.
-     * @param argument строка, которую "скажет" Антон Валерьевич. Аргумент может быть null.
+     * @param request строка, которую "скажет" Антон Валерьевич. Аргумент может быть null.
      */
     @Override
-    public void execute(String argument) {
+    public Response execute(Request request) {
+        String argument = request.getArgument();
         if (argument != null && !argument.isEmpty()) {
             if (argument.length() < 40) {
                 String message = " ".repeat((40 - argument.length()) / 2) + argument + " ".repeat((40 - argument.length()) / 2 + 3);
-                System.out.println(Gavrilov_art.replace("%m", message));
+                return new Response(Gavrilov_art.replace("%m", message), true);
             } else {
-                System.out.println("\u001B[31mОшибка\u001B[0m: слишком длинная фраза (до 40 символов)");
+                return new Response("\u001B[31mОшибка\u001B[0m: слишком длинная фраза (до 40 символов)", false);
             }
         } else {
             String message = " ".repeat((40 - 33) / 2) + "Бро, тебе надо ввести фразу и тд." + " ".repeat((40 - 33) / 2 + 3);
-            System.out.println(Gavrilov_art.replace("%m", message));
+            return new Response(Gavrilov_art.replace("%m", message), true);
         }
     }
 

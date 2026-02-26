@@ -1,5 +1,7 @@
 package commands;
 import managers.CollectionManager;
+import network.Request;
+import network.Response;
 
 /**
  * Команда очистки коллекции, то есть удаление всех ещё элементов
@@ -25,8 +27,13 @@ public class ClearCommand implements Command{
      * @param arg не используется в данной команде
      */
     @Override
-    public void execute(String arg) {
-        collectionManager.clear();
+    public Response execute(Request request) {
+        try {
+            collectionManager.clear();
+            return new Response("Коллекция была очищена", true);
+        } catch (Exception e) {
+            return new Response("\u001B[31mОшибка:\u001B[0m Не удалось очистить коллекцию", false);
+        }
     }
 
     /**

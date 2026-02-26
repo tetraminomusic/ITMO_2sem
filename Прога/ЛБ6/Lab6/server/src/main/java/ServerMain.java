@@ -5,45 +5,79 @@ import network.Request;
 import network.Response;
 import network.UDPServer;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
-import java.io.File;
-import java.util.logging.Logger;
-
+/**
+ * Точка входа для сервера
+ * Грузит данные из json файла. Получает запросы со стороны клиента. Если запрос пришёл удачно, то запрос передаётся в commandManager и отправляет ответ
+ */
 public class ServerMain {
-    private static final Logger logger = (Logger) LoggerFactory.getLogger(ServerMain.class);
+    /**
+     * Главный логгер сервера
+     */
+    private static final Logger logger = LoggerFactory.getLogger(ServerMain.class);
 
-    public static void main(String[] args) {
+    /**
+     * Порт, который слушает сервер
+     */
+    private static final int PORT = 12345;
+
+    /**
+     * Точка входа в программу для сервера
+     *
+     */
+    public static void main(String[] arg) {
         try {
             CollectionManager collectionManager = new CollectionManager();
             FileManager fileManager = new FileManager("LAB_DATA_PATH");
 
-            collectionManager.getCollection().putAll(fileManager.read());
+            //грузим данные из JSON при старте
+            try {
+                var loadedData = fileManager.read();
+                if (loadedData != null) {
+                    collectionManager.getCollection().putAll(loadedData);
+                    logger.info("Коллекция загружена. Элементов: {}", loadedData.size());
+                }
+            } catch (Exception e) {
+                logger.error("Ошибка при начальной загрузке файла: {}", e.getMessage());
+            }
+
+            //создаём сетевой модуль
+            UDPServer server = new UDPServer(PORT);
 
             CommandManager commandManager = new CommandManager(collectionManager, fileManager);
-            UDPServer server = new UDPServer(12345);
 
+            //Этот код выполняется, когда сервер останавливается и тд (Чтобы у нас было автоматическое сохранение данных в файл)
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                logger.info("Завершение работы... Сохранение коллекции.");
+                logger.info("Получен сигнал завершения. Сохранение данных");
                 fileManager.write(collectionManager.getCollection());
+                server.close();
+                logger.info("Сервер успешно остановлен");
             }));
 
-            logger.info("Сервер готов к выполнению команд.");
+            logger.info("Сервер запушен и готов к работе");
 
-            byte[] buffer = new byte[65536];
+            //бесконечный цикл работы
+
             while (true) {
-                Request request = server.receiveRequest(buffer);
+                try {
+                    //Пробуем получить запрос от клиента
+                    Request request = server.receiveRequest();
 
-                if (request != null) {
-                    Response response = commandManager.execute(request);
+                    if (request != null) {
+                        logger.info("Обработки команды: {}", request.getCommandName());
 
-                    server.sendResponse(response, request.getClientAddress());
+                        //Выполняем запрос
+                        Response response = commandManager.handle(request);
+                        //Отправляем ответ
+                        server.sendResponse(response, request.getClientAddress());
+                    }
+                } catch (Exception e) {
+                    logger.info("Ошибка в главном цикле обработки: {}", e.getMessage());
                 }
-
-                Thread.sleep(10);
             }
         } catch (Exception e) {
-            logger.info("Критическая ошибка сервера:" + e.getMessage());
-        }
+            logger.error("Критическая ошибка при запуске сервера: {}", e.getMessage());
         }
     }
 }

@@ -15,6 +15,9 @@ import java.util.*;
  * Принимает объект Request, находит нужную команду и возвращает Response.
  */
 public class CommandManager {
+    /**
+     * Логгер для сетевого менеджера
+     */
     private static final Logger logger = LoggerFactory.getLogger(CommandManager.class);
 
     /** Карта команд: Имя -> Объект команды */
@@ -36,11 +39,16 @@ public class CommandManager {
         commands.put("remove_key", new RemovekeyCommand(collection));
         commands.put("clear", new ClearCommand(collection));
         // Save доступна только серверу (можно вызвать вручную в коде сервера)
-        commands.put("server_save", new SaveCommand(collection, file));
+
+        //depracated
+        commands.put("save", new SaveCommand(collection, file));
         commands.put("execute_script", new ExecuteScriptCommand(this));
+
         commands.put("remove_lower", new RemoveLowerCommand(collection));
         commands.put("history", new HistoryCommand(history));
         commands.put("replace_if_greater", new ReplaceIfGreaterCommand(collection));
+
+        //лямбда
         commands.put("group_counting_by_minimal_point", new GroupCountingByMinimalCommand(collection));
         commands.put("count_less_difficulty", new CountLessThanDifficulty(collection));
         commands.put("print_field_descending_minimal_point", new PrintFieldDescendingMinimalPointCommand(collection));
@@ -71,11 +79,12 @@ public class CommandManager {
             return new Response("Ошибка: Команда '" + commandName + "' не найдена. Введите 'help'.", false);
         }
     }
-
+    /**
+     * Добавляет команду в список последних использованных команд
+     * @param cmd Строковое название команды
+     */
     private void addToHistory(String cmd) {
         history.add(cmd);
         if (history.size() > 14) history.remove(0);
     }
-
-    public List<String> getHistory() { return history; }
 }

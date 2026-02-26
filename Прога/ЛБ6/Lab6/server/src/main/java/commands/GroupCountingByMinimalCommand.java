@@ -2,6 +2,9 @@ package commands;
 
 import managers.CollectionManager;
 import models.LabWork;
+import network.Request;
+import network.Response;
+
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -26,17 +29,22 @@ public class GroupCountingByMinimalCommand  implements Command {
 
     /**
      * Выполнение логики команды
-     * @param arg - аргумент команды. Не используется в данной команде.
+     * @param request - аргумент команды. Не используется в данной команде.
      */
     @Override
-    public void execute(String arg) {
+    public Response execute(Request request) {
         //collect - терминальная операция, которая собирает элементы потока в Map
-        Map<Float, Long> groups = collectionManager.getCollection().values().stream().collect(Collectors.groupingBy(labWork -> labWork.getMinimalPoint(), Collectors.counting()));
+        Map<Float, Long> groups = collectionManager.getCollection().values().stream()
+                .collect(Collectors.groupingBy(labWork -> labWork.getMinimalPoint(), Collectors.counting()));
 
         if (groups.isEmpty()) {
-            System.out.println("Коллекция пуста");
+            return new Response("Коллекция пуста", true);
         } else {
-            groups.forEach((point,count) -> System.out.println("Минимальный балл [" + point + "]: " + count + " шт."));
+            //превращаем каждую запись в нужный нам вид и склеиваем их по \n
+            String result = groups.entrySet().stream()
+                    .map(entry -> "Минимальный балл [" + entry.getKey() + "]: " + entry.getValue() + " шт.")
+                    .collect(Collectors.joining("\n"));
+            return new Response(result, true);
         }
     }
 

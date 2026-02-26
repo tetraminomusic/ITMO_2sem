@@ -2,8 +2,11 @@ package commands;
 
 import managers.CollectionManager;
 import models.LabWork;
+import network.Request;
+import network.Response;
 
 import java.util.Comparator;
+import java.util.stream.Collectors;
 
 /**
  * Команда, которая выводит значения поля minimalPoint для всех элементов в порядке убывания.
@@ -27,14 +30,20 @@ public class PrintFieldDescendingMinimalPointCommand  implements Command {
 
     /**
      * Выполнение логики команды
-     * @param arg аргумент команды. Не используется в данной команде.
+     * @param request аргумент команды. Не используется в данной команде.
      */
     @Override
-    public void execute(String arg) {
-        collectionManager.getCollection().values().stream()
-                .map(labwork -> labwork.getMinimalPoint()) //оставляем только баллы
-                .sorted(Comparator.reverseOrder()) // сортируем по убыванию
-                .forEach(x -> System.out.println(x)); // печатаем каждый элемент
+    public Response execute(Request request) {
+        String result = collectionManager.getCollection().values().stream()
+                .map(LabWork::getMinimalPoint) // Достаем float
+                .sorted(Comparator.reverseOrder()) // Сортируем
+                .map(String::valueOf) // Превращаем в String (иначе joining не сработает)
+                .collect(Collectors.joining("\n")); // Склеиваемт
+        if (result.isEmpty()) {
+            return new Response("Коллекция пуста, баллов нет", true);
+        } else {
+            return new Response("Список баллов по убыванию:\n" + result, true);
+        }
     }
 
     /**

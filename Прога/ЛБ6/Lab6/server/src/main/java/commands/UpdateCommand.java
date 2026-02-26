@@ -1,8 +1,9 @@
 package commands;
 
 import managers.CollectionManager;
-import managers.LabWorkAsker;
 import models.LabWork;
+import network.Request;
+import network.Response;
 
 /**
  * Команда, которая обновляет значение элемента по ключу.
@@ -15,30 +16,25 @@ public class UpdateCommand implements Command{
      * Менеджер коллекции, который управляет CRUD операциями.
      */
     private final CollectionManager collectionManager;
-    /**
-     * Интерфейс, который запрашивает данные и создаёт новый элемент коллекции.
-     */
-    private final LabWorkAsker asker;
+
 
     /**
      * Конструктор команды.
      * @param collectionManager менеджер коллекции для выполнения операций
-     * @param asker интерфейс, который запрашивает данные и создаёт новый элемент коллекции
      */
-    public UpdateCommand(CollectionManager collectionManager, LabWorkAsker asker) {
+    public UpdateCommand(CollectionManager collectionManager) {
         this.collectionManager = collectionManager;
-        this.asker = asker;
     }
 
     /**
      * Выполнение логики команды.
-     * @param arg аргумент команды, являющийся ID элемента, значение которого мы хотим обновить.
+     * @param request аргумент команды, являющийся ID элемента, значение которого мы хотим обновить.
      */
     @Override
-    public void execute(String arg) {
+    public Response execute(Request request) {
+        String arg = request.getArgument();
         if (arg == null || arg.isEmpty()) {
-            System.out.println("\u001B[31mОшибка\u001B[0m: Введите ID элемента для обновления");
-            return;
+            return new Response("\u001B[31mОшибка\u001B[0m: Введите ID элемента для обновления", false);
         }
 
         try {
@@ -46,8 +42,7 @@ public class UpdateCommand implements Command{
 
             //проверяем существование элемента с таким ID
             if (!collectionManager.containsId(id)) {
-                System.out.println("\u001B[31mОшибка\u001B[0m: Элемент с ID " + id + " не найден в коллекции");
-                return;
+                return new Response("\u001B[31mОшибка\u001B[0m: Элемент с ID " + id + " не найден в коллекции", false);
             }
 
             //получаем старый элемент для сохранения его ID (хотя мы и так передаём тот же ID)
@@ -55,23 +50,21 @@ public class UpdateCommand implements Command{
             String key = findKeyById(id); // Находим ключ по ID
 
             if (key == null) {
-                System.out.println("\u001B[31mОшибка\u001B[0m: Не удалось найти ключ для элемента с ID " + id);
-                return;
+                return new Response("\u001B[31mОшибка\u001B[0m: Не удалось найти ключ для элемента с ID " + id, false);
             }
 
             // Создаём обновлённый элемент с тем же ID
-            LabWork updated = asker.createLabWork(id);
+            LabWork updated = request.getObjectArgument();
 
             //ОБНОВА
             boolean updatedSuccessfully = collectionManager.update(key, updated);
             if (updatedSuccessfully) {
-                System.out.println("Элемент с ID " + id + " успешно обновлён");
+                return new Response("Элемент с ID " + id + " успешно обновлён", true);
             } else {
-                System.out.println("\u001B[31mОшибка\u001B[0m: Не удалось обновить элемент");
+                return new Response("\u001B[31mОшибка\u001B[0m: Не удалось обновить элемент", false);
             }
-
         } catch (NumberFormatException e) {
-            System.out.println("\u001B[31mОшибка\u001B[0m: ID должен быть числом!");
+            return new Response("\u001B[31mОшибка\u001B[0m: ID должен быть числом!", false);
         }
     }
 

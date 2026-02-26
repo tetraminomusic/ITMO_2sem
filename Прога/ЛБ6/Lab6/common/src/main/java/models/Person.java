@@ -1,5 +1,6 @@
 package models;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -9,7 +10,9 @@ import java.time.LocalDateTime;
  * @author Малых Кирилл Романович
  * @version 1.0
  */
-public class Person {
+public class Person implements Serializable {
+
+    private static final long serialVersionUID = 1234L;
     /**
      * Имя автора.
      * Поле не может быть null, строка не может быть пустой.
@@ -27,19 +30,16 @@ public class Person {
      * Значение поля должно быть больше 0.
      */
     private float height;
-
     /**
      * Вес автора.
      * Поле может быть null, значение поля должно быть больше 0.
      */
     private Double weight;
-
     /**
      * Идентификатор паспорта автора.
      * Длина строки не должна превышать 50 символов. Поле может быть null.
      */
     private String passportID;
-
     /**
      * Конструктор для создания объекта Person с проверкой всех входных данных.
      *

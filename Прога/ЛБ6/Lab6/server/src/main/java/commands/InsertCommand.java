@@ -5,8 +5,7 @@ import models.LabWork;
 import network.Request;
 import network.Response;
 import org.slf4j.LoggerFactory;
-
-import java.util.logging.Logger;
+import org.slf4j.Logger;
 
 /**
  * Команда, которая добавляет новый элемент в коллекцию с заданным ключом.
@@ -15,7 +14,7 @@ import java.util.logging.Logger;
  * @version 1.0
  */
 public class InsertCommand implements Command{
-    private static final Logger logger = (Logger) LoggerFactory.getLogger(InsertCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(InsertCommand.class);
     private final CollectionManager collectionManager;
     /**
      * Конструктор команды.
@@ -51,16 +50,12 @@ public class InsertCommand implements Command{
             newLab.setID(collectionManager.generateNextId());
 
             collectionManager.getCollection().put(key, newLab);
+            logger.info("В коллекцию добавлен новый элемент с ключом: {}", key);
+            return new Response("Объект успешно добавлен под ключом '" + key + "'.", true);
         } catch (Exception e) {
-            logger.info("Ошибка при вставке элемента: " + e.getMessage());
+            logger.info("Ошибка при вставке элемента: {}", e.getMessage());
             return new Response("Критическая ошибка на сервере при добавлении нового объекта", false);
         }
-
-
-        //создаём новый объект LabWork через Asker
-
-
-        //ОБНОВА
 
     }
 

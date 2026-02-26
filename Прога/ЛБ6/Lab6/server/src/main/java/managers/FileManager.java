@@ -5,6 +5,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import models.LabWork;
 import models.Person;
+import network.LocalDateTimeAdapter;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -19,6 +22,10 @@ import java.util.Scanner;
  * @version 1.0
  */
 public class FileManager {
+    /**
+     * Логгер для записи этапов работы с файлом
+     */
+    private static final Logger logger = LoggerFactory.getLogger(FileManager.class);
     /**
      * Переменная окружения
      */
@@ -46,7 +53,7 @@ public class FileManager {
         String path = System.getenv(envVar);
 
         if (path == null) {
-            System.out.println("\u001B[31mОшибка\u001B[0m: Переменная окружения " + envVar + " не установлена!");
+            logger.error("Ошибка: Переменная окружения {} не установлена!", envVar);
             return;
         }
 
@@ -56,14 +63,14 @@ public class FileManager {
 
         if (file.exists()) {
             if (!file.canWrite()) {
-                System.out.println("\u001B[31mОшибка\u001B[0m: Недостаточно прав на запись в файл" + path);
+                logger.error("Ошибка: Недостаточно прав на запись в файл: {}", file.getName());
                 return;
             } else if (!file.isFile()) {
-                System.out.println("\u001B[31mОшибка\u001B[0m: В переменной окружения указан не файл: " + file.getName());
+                logger.error("Ошибка: В переменной окружения указан не файл: {}", file.getName());
             }
         } else {
             if (parentDir.exists() && !parentDir.canWrite()) {
-                System.out.println("\u001B[31mОшибка\u001B[0m: В директории " + parentDir.getName() + " нельзя создать файл!");
+                logger.error("Ошибка: В директории {} нельзя создать файл!", file.getParentFile().getName());
                 return;
             }
         }
@@ -71,9 +78,9 @@ public class FileManager {
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(path))) {
             String json = gson.toJson(collection);
             writer.write(json);
-            System.out.println("Запись в файл произошла успешно");
+            logger.info("Запись в файл произошла успешно");
         } catch (IOException e) {
-            System.out.println("\u001B[31mОшибка\u001B[0m при сохранении в файл: " + e.getMessage());
+            logger.error("Ошибка: при сохранении в файл: {} ", e.getMessage());
         }
     }
 
@@ -86,7 +93,7 @@ public class FileManager {
         String path = System.getenv(envVar);
 
         if (path == null || path.isEmpty()) {
-            System.out.println("\u001B[31mОшибка\u001B[0m: Переменная окружения " + envVar + " не установлена! Будет создана пустая коллекция");
+            logger.error("Ошибка: Переменная окружения {} не установлена! Будет создана пустая коллекция", envVar);
             return new LinkedHashMap<>();
         }
 
@@ -95,33 +102,33 @@ public class FileManager {
 
         //проверка существования родительской директории
         if (parentDir != null && !parentDir.exists()) {
-            System.out.println("\u001B[31mОшибка\u001B[0m: Директория " + parentDir.getPath() + " не существует! Будет создана пустая коллекция");
+            logger.error("Ошибка: Директория {} не существует! Будет создана пустая коллекция", parentDir.getPath());
             return new LinkedHashMap<String, LabWork>();
         }
 
         //проверка прав на выполнение для родительской директории (нужно для доступа к файлу)
         if (parentDir != null && !parentDir.canExecute()) {
-            System.out.println("\u001B[31mОшибка\u001B[0m: Недостаточно прав на доступ к директории " + parentDir.getPath() + "! Будет создана пустая коллекция");
+            logger.error("Ошибка: Недостаточно прав на доступ к директории {}! Будет создана пустая коллекция", parentDir.getPath());
             return new LinkedHashMap<String, LabWork>();
         }
 
         if (!file.exists()) {
-            System.out.println("\u001B[31mОшибка\u001B[0m: Файл " + path + " не существует! Будет создана пустая коллекция");
+            logger.error("Ошибка: Файл {} не существует! Будет создана пустая коллекция", path);
             return new LinkedHashMap<String, LabWork>();
         }
 
         if (!file.isFile()) {
-            System.out.println("\u001B[31mОшибка\u001B[0m: Путь " + path + " указывает не на файл, а на директорию! Будет создана пустая коллекция");
+            logger.error("Ошибка: Путь {} указывает не на файл, а на директорию! Будет создана пустая коллекция", path);
             return new LinkedHashMap<String, LabWork>();
         }
 
         if (!file.canRead()) {
-            System.out.println("\u001B[31mОшибка\u001B[0m: Недостаточно прав на чтение файла " + path + "! Будет создана пустая коллекция");
+            logger.error("Ошибка: Недостаточно прав на чтение файла {}! Будет создана пустая коллекция", path);
             return new LinkedHashMap<String, LabWork>();
         }
 
         if (file.length() == 0) {
-            System.out.println("\u001B[33mПредупреждение\u001B[0m: Файл " + path + " пустой! Будет создана пустая коллекция");
+            logger.warn("Предупреждение: Файл {} пустой! Будет создана пустая коллекция", path);
             return new LinkedHashMap<String, LabWork>();
         }
 
@@ -137,7 +144,7 @@ public class FileManager {
             LinkedHashMap<String, LabWork> result = gson.fromJson(jsonString.toString(), type);
 
             if (result == null) {
-                System.out.println("\u001B[33mПредупреждение\u001B[0m: Файл пуст или содержит некорректные данные! Будет создана пустая коллекция");
+                logger.warn("Предупреждение: Файл пуст или содержит некорректные данные! Будет создана пустая коллекция");
                 return new LinkedHashMap<String, LabWork>();
             } else {
                 HashSet<Integer> idSet = new HashSet<>();
@@ -150,7 +157,7 @@ public class FileManager {
 
                     //пропуск null лаб
                     if (labWork == null) {
-                        System.out.println("\u001B[31mОшибка валидации данных\u001B[0m: Элемент " + elementNumber + " (ключ: " + entry.getKey() + ") равен null!");
+                        logger.error("Ошибка валидации данных: Элемент {} (ключ: {}) равен null!", elementNumber, entry.getKey());
                         hasErrors = true;
                         continue;
                     }
@@ -159,20 +166,20 @@ public class FileManager {
 
                     //проверка на id
                     if (id == null) {
-                        System.out.println("\u001B[31mОшибка валидации данных\u001B[0m: У элемента " + elementNumber + " (ключ: " + entry.getKey() + ") id = null!");
+                        logger.error("Ошибка валидации данных: У элемента {} (ключ: {}) id = null!", elementNumber, entry.getKey());
                         hasErrors = true;
                         continue;
                     }
 
                     if (id <= 0) {
-                        System.out.println("\u001B[31mОшибка валидации данных\u001B[0m: У элемента " + elementNumber + " id = " + id + " (должен быть > 0)!");
+                        logger.error("Ошибка валидации данных: У элемента {} id = {} (должен быть > 0)!", elementNumber, id);
                         hasErrors = true;
                         continue;
                     }
 
                     //проверка на уникальность
                     if (idSet.contains(id)) {
-                        System.out.println("\u001B[31mОшибка валидации данных\u001B[0m: Обнаружен повторяющийся id = " + id + " в файле!");
+                        logger.error("Ошибка валидации данных: Обнаружен повторяющийся id = {} в файле!", id);
                         hasErrors = true;
                         continue;
                     }
@@ -180,24 +187,24 @@ public class FileManager {
 
                     //проверка на имя
                     if (labWork.getName() == null || labWork.getName().trim().isEmpty()) {
-                        System.out.println("\u001B[31mОшибка валидации данных\u001B[0m: У элемента с id = " + id + " имя не может быть пустым!");
+                        logger.error("Ошибка валидации данных: У элемента с id = {} имя не может быть пустым!", id);
                         hasErrors = true;
                     }
 
                     //проверка координат
                     if (labWork.getCoordinates() == null) {
-                        System.out.println("\u001B[31mОшибка валидации данных\u001B[0m: У элемента с id = " + id + " coordinates = null!");
+                        logger.error("Ошибка валидации данных: У элемента с id = {} coordinates = null!", id);
                         hasErrors = true;
                     }
 
                     //проверка minimalPoint > 0
                     if (labWork.getMinimalPoint() <= 0) {
-                        System.out.println("\u001B[31mОшибка валидации данных\u001B[0m: У элемента с id = " + id + " minimalPoint = " + labWork.getMinimalPoint() + " (должен быть > 0)!");
+                        logger.error("Ошибка валидации данных: У элемента с id = {} minimalPoint = {} (должен быть > 0)!", id, labWork.getMinimalPoint());
                         hasErrors = true;
                     }
 
                     if (labWork.getDifficulty() == null) {
-                        System.out.println("\u001B[31mОшибка валидации данных\u001B[0m: У элемента с id = " + id + " difficulty = null!");
+                        logger.error("Ошибка валидации данных: У элемента с id = {} difficulty = null!", id);
                         hasErrors = true;
                     }
 
@@ -205,19 +212,19 @@ public class FileManager {
                     if (labWork.getAuthor() != null) {
                         Person author = labWork.getAuthor();
                         if (author.getName() == null || author.getName().trim().isEmpty()) {
-                            System.out.println("\u001B[31mОшибка валидации данных\u001B[0m: У автора элемента с id = " + id + " имя не может быть пустым!");
+                            logger.error("Ошибка валидации данных: У автора элемента с id = {} имя не может быть пустым!", id);
                             hasErrors = true;
                         }
                         if (author.getHeight() <= 0) {
-                            System.out.println("\u001B[31mОшибка валидации данных\u001B[0m: У автора элемента с id = " + id + " рост должен быть > 0!");
+                            logger.error("Ошибка валидации данных: У автора элемента с id = {} рост должен быть > 0!", id);
                             hasErrors = true;
                         }
                         if (author.getWeight() != null && author.getWeight() <= 0) {
-                            System.out.println("\u001B[31mОшибка валидации данных\u001B[0m: У автора элемента с id = " + id + " вес должен быть > 0!");
+                            logger.error("Ошибка валидации данных: У автора элемента с id = {} вес должен быть > 0!", id);
                             hasErrors = true;
                         }
                         if (author.getPassportID() != null && author.getPassportID().length() > 50) {
-                            System.out.println("\u001B[31mОшибка валидации данных\u001B[0m: У автора элемента с id = " + id + " паспорт не должен превышать 50 символов!");
+                            logger.error("Ошибка валидации данных: У автора элемента с id = {} паспорт не должен превышать 50 символов!", id);
                             hasErrors = true;
                         }
                     }
@@ -225,19 +232,18 @@ public class FileManager {
 
                 //проверяем после обработки всех лаб
                 if (hasErrors) {
-                    System.out.println("\u001B[31mОшибка валидации данных\u001B[0m: Обнаружены ошибки в файле. Будет создана пустая коллекция");
+                    logger.error("Ошибка валидации данных: Обнаружены ошибки в файле. Будет создана пустая коллекция");
                     return new LinkedHashMap<String, LabWork>();
                 }
 
-                //ошибок нет, возвращаем резы
-                System.out.println("\u001B[32mУспех\u001B[0m: Коллекция успешно загружена из файла. Загружено элементов: " + result.size());
+                logger.info("Успех: Коллекция успешно загружена из файла. Загружено элементов: {}", result.size());
                 return result;
             }
         } catch (FileNotFoundException e) {
-            System.out.println("\u001B[31mОшибка\u001B[0m: Файл не был найден! Будет создана пустая коллекция");
+            logger.error("Ошибка: Файл не был найден! Будет создана пустая коллекция");
             return new LinkedHashMap<String, LabWork>();
         } catch (com.google.gson.JsonSyntaxException e) {
-            System.out.println("\u001B[31mОшибка\u001B[0m: Неверный формат JSON в файле! Будет создана пустая коллекция");
+            logger.error("Ошибка: Неверный формат JSON в файле! Будет создана пустая коллекция");
             return new LinkedHashMap<String, LabWork>();
         }
     }
