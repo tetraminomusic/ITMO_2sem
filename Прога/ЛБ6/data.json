@@ -1,0 +1,28 @@
+{
+  "item1": {
+    "id": 1,
+    "name": "AppleLab",
+    "coordinates": {
+      "x": 10,
+      "y": 10
+    },
+    "creationDate": "2026-02-26T20:28:46.916959837",
+    "minimalPoint": 1.5,
+    "description": "Описание яблока",
+    "tunedInWorks": 1,
+    "difficulty": "VERY_EASY"
+  },
+  "item3": {
+    "id": 3,
+    "name": "CherryLab",
+    "coordinates": {
+      "x": 15,
+      "y": 15
+    },
+    "creationDate": "2026-02-26T20:28:46.933785597",
+    "minimalPoint": 5.5,
+    "description": "Описание вишни",
+    "tunedInWorks": 3,
+    "difficulty": "HOPELESS"
+  }
+}

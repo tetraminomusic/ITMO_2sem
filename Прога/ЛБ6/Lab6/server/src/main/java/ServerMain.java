@@ -7,6 +7,8 @@ import network.UDPServer;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
+import java.util.Scanner;
+
 /**
  * Точка входа для сервера
  * Грузит данные из json файла. Получает запросы со стороны клиента. Если запрос пришёл удачно, то запрос передаётся в commandManager и отправляет ответ
@@ -59,7 +61,24 @@ public class ServerMain {
 
             //бесконечный цикл работы
 
+            Scanner serverScanner = new Scanner(System.in);
+
             while (true) {
+                if (System.in.available() > 0) {
+                    String serverCommand = serverScanner.nextLine().trim().toLowerCase();
+
+                    if (serverCommand.equals("save")) {
+                        // ТЗ: Сохранение при исполнении специальной команды сервера
+                        fileManager.write(collectionManager.getCollection());
+                        logger.info("Коллекция принудительно сохранена администратором сервера.");
+                    } else if (serverCommand.equals("exit")) {
+                        logger.info("Завершение работы через консоль сервера...");
+                        fileManager.write(collectionManager.getCollection());
+                        System.exit(0);
+                    } else {
+                        System.out.println("Сервер поддерживает только локальные команды: 'save', 'exit'.");
+                    }
+                }
                 try {
                     //Пробуем получить запрос от клиента
                     Request request = server.receiveRequest();

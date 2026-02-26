@@ -24,7 +24,7 @@ public class ClearCommand implements Command{
 
     /**
      * Выполнение логики команды.
-     * @param arg не используется в данной команде
+     * @param request не используется в данной команде
      */
     @Override
     public Response execute(Request request) {
