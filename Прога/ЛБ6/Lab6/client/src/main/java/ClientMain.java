@@ -63,7 +63,7 @@ public class ClientMain {
                     "help", "info", "show", "insert", "update", "remove_key",
                     "clear", "execute_script", "exit", "history", "gavrilovsay",
                     "group_counting_by_minimal_point","print_field_descending_minimal_point",
-                    "remove_lower", "replace_if_greater", "count_less_than_difficulty", "polyakov", "псж");
+                    "remove_lower", "replace_if_greater", "count_less_than_difficulty", "polyakov");
 
             LineReader lineReader = LineReaderBuilder.builder().terminal(terminal).completer(completer).build();
 
@@ -72,11 +72,6 @@ public class ClientMain {
             ExecuteScriptCommand scriptExecutor = new ExecuteScriptCommand(updClient, asker, COMMANDS_WITH_OBJECT);
 
             while (true) {
-
-
-
-
-
                 String input;
                 try {
                     input = lineReader.readLine("\u001B[32mКонсольНоУжеКлиент@Что-то_заUмное2:~₽\u001B[0m ");
@@ -123,11 +118,45 @@ public class ClientMain {
                     continue;
                 }
 
+                if (commandName.equals("update")) {
+                    // 1. Проверяем, что ID — число (локально)
+                    if (argument.isEmpty()) {
+                        System.out.println("Укажите ID."); continue;
+                    }
+                    try { Integer.parseInt(argument); }
+                    catch (NumberFormatException e) { System.out.println("ID должен быть числом."); continue; }
+
+                    // 2. ПРОВЕРКА НА СЕРВЕРЕ (Dry Run)
+                    // Шлем запрос БЕЗ объекта LabWork
+                    try {
+                        updClient.sendRequest(new Request(commandName, argument, null));
+                        Response checkResponse = updClient.receiveResponse();
+
+                        if (!checkResponse.getSuccess()) {
+                            System.err.println(checkResponse.getMessage());
+                            continue; // Сервер сказал, что такого ID нет — не запускаем asker
+                        }
+
+                        // 3. Если сервер ответил успехом — значит ID существует!
+                        System.out.println("Введите новые данные для объекта:");
+                        LabWork updatedLab = asker.createLabWork();
+
+                        // 4. Шлем финальный запрос уже С ОБЪЕКТОМ
+                        updClient.sendRequest(new Request(commandName, argument, updatedLab));
+                        Response finalResponse = updClient.receiveResponse();
+                        System.out.println(finalResponse.getMessage());
+
+                    } catch (IOException e) {
+                        System.err.println("Ошибка связи: " + e.getMessage());
+                    }
+                    continue; // Переходим к следующему вводу
+                }
+
                 Request request;
                 try {
                     if (COMMANDS_WITH_OBJECT.contains(commandName)) {
                         System.out.println("Команда '" + commandName + "' требует дополнительного ввода данных.");
-                        LabWork labWork = asker.createLabWork(0);
+                        LabWork labWork = asker.createLabWork();
                         request = new Request(commandName, argument, labWork);
                     } else {
                         request = new Request(commandName, argument, null);
@@ -144,7 +173,7 @@ public class ClientMain {
                     if (response.getSuccess()) {
                         System.out.println(response.getMessage());
                     } else {
-                        System.out.println("\u001B[31mОшибка:\u001B[0m " + response.getMessage());
+                        System.out.println(response.getMessage());
                     }
 
                 } catch (SocketTimeoutException e) {

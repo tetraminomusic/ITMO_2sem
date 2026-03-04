@@ -260,10 +260,9 @@ public class LabWorkAsker {
     /**
      * Собирает полный объект {@link LabWork}, запрашивая все необходимые поля.
      *
-     * @param id уникальный идентификатор для новой работы.
      * @return полностью инициализированный объект лабораторной работы.
      */
-    public LabWork createLabWork(Integer id) {
+    public LabWork createLabWork() {
         System.out.println("Создание лабораторной работы ---");
         String name = askString("Название лабораторной:", false);
         Coordinates coord = askCoordinates();
@@ -274,7 +273,7 @@ public class LabWorkAsker {
         Person person = askPerson();
 
         return new LabWork(
-                id,
+                0,
                 name,
                 coord,
                 LocalDateTime.now(),

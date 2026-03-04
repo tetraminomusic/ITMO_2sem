@@ -164,9 +164,17 @@ public class LabWork implements Comparable<LabWork>, Serializable {
 
     /**
      * Устанавливает уникальный ID (Используется в командах insert и update)
-     * @param integer уникальный номер
+     * @param id уникальный номер
      */
-    public void setID(Integer integer) {
-        this.id = integer;
+    public void setID(Integer id) {
+        this.id = id;
+    }
+
+    public void setCreationDate(java.time.LocalDateTime creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public java.time.LocalDateTime getCreationDate() {
+        return creationDate;
     }
 }

@@ -34,44 +34,48 @@ public class UpdateCommand implements Command{
     public Response execute(Request request) {
         String arg = request.getArgument();
         if (arg == null || arg.isEmpty()) {
-            return new Response("\u001B[31mОшибка\u001B[0m: Введите ID элемента для обновления", false);
+            return new Response("Ошибка: не указан ID.", false);
         }
 
         try {
             int id = Integer.parseInt(arg);
 
-            //проверяем существование элемента с таким ID
-            if (!collectionManager.containsId(id)) {
-                return new Response("\u001B[31mОшибка\u001B[0m: Элемент с ID " + id + " не найден в коллекции", false);
+            var entry = collectionManager.getCollection().entrySet().stream()
+                    .filter(e -> e.getValue().getId().equals(id))
+                    .findFirst()
+                    .orElse(null);
+
+            if (entry == null) {
+                return new Response("Элемент с ID " + id + " не найден.", false);
             }
 
-            //получаем старый элемент для сохранения его ID (хотя мы и так передаём тот же ID)
-            LabWork oldLab = collectionManager.getById(id);
-            String key = findKeyById(id); // Находим ключ по ID
+            String key = entry.getKey();
+            LabWork oldLab = entry.getValue();
 
-            if (key == null) {
-                return new Response("\u001B[31mОшибка\u001B[0m: Не удалось найти ключ для элемента с ID " + id, false);
-            }
-
-            // Создаём обновлённый элемент с тем же ID
             LabWork updated = request.getObjectArgument();
-
-            //ОБНОВА
-            boolean updatedSuccessfully = collectionManager.update(key, updated);
-            if (updatedSuccessfully) {
-                return new Response("Элемент с ID " + id + " успешно обновлён", true);
-            } else {
-                return new Response("\u001B[31mОшибка\u001B[0m: Не удалось обновить элемент", false);
+            if (updated == null) {
+                return new Response("ID подтвержден", true);
             }
+            updated.setID(id);
+            updated.setCreationDate(oldLab.getCreationDate());
+
+            collectionManager.getCollection().put(key, updated);
+
+            return new Response("Элемент [ID:" + id + "] успешно обновлен", true);
+
         } catch (NumberFormatException e) {
-            return new Response("\u001B[31mОшибка\u001B[0m: ID должен быть числом!", false);
+            return new Response("Ошибка: ID должен быть числом!", false);
         }
     }
+
+
+
 
     /**
      * Вспомогательный метод для поиска ключа по ID.
      * @param id идентификатор элемента
      * @return ключ элемента или null, если не найден
+     * @deprecated всё переместил в основной метод
      */
     private String findKeyById(Integer id) {
         if (id == null || collectionManager.isEmpty()) {

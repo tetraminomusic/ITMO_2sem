@@ -26,10 +26,6 @@ public class ExecuteScriptCommand{
      */
     private static final Set<String> runningScripts = new HashSet<>();
 
-    /**
-     * Конструктор команды.
-     * @param commandManager менеджер команд.
-     */
     public ExecuteScriptCommand(UDPClient udpClient, LabWorkAsker asker, List<String> objectCommands) {
         this.udpClient = udpClient;
         this.asker = asker;
@@ -83,7 +79,7 @@ public class ExecuteScriptCommand{
                     // Переключаем Asker на сканер файла
                     asker.setScriptScanner(scriptScanner);
                     try {
-                        models.LabWork lab = asker.createLabWork(0);
+                        models.LabWork lab = asker.createLabWork();
                         request = new Request(command, argument, lab);
                     } finally {
                         asker.setScriptScanner(null); // Возвращаем ввод на консоль
