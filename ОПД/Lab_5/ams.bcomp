@@ -1,7 +1,7 @@
 ORG 0x4F8 					    ; Адрес начала программы
 current: WORD $string 		    ; Адрес текущей ячейки
 tempValue: WORD ? 			    ; Ячейка для промежуточного хранения данных
-oneByteRemain: WORD 0xFF        ; Маска для выделения младшего байта
+oneByteRemain: WORD 0x00FF        ; Маска для выделения младшего байта
 endSymbol: WORD 0x0A 		    ; Стоп-символ (NL)
 
 START: 
