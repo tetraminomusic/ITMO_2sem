@@ -1,0 +1,43 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow'
+}
+
+application {
+    mainClass = 'ServerMain'
+}
+group = 'Unona_Games'
+version = '1.0'
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    //прописывает зависимости от коммон и библиотек
+    implementation project(":common")
+
+    implementation 'org.postgresql:postgresql:42.7.2'
+
+    implementation 'com.google.code.gson:gson:2.10.1'
+
+    implementation 'ch.qos.logback:logback-classic:1.4.14'
+    implementation 'org.slf4j:slf4j-api:2.0.12'
+}
+
+shadowJar {
+    archiveBaseName.set('server')
+    archiveClassifier.set('all')
+    archiveVersion.set('')
+    destinationDirectory = file("\\\\wsl.localhost\\Ubuntu\\home\\tetramino\\lab7")
+
+    doLast {
+        copy {
+            from archiveFile
+            into file("C:/Users/user/Desktop/ITMO_2sem/Прога/ЛБ7")
+        }
+        println "JAR успешно скопирован в директорию Windows и WSL."
+    }
+
+}
