@@ -6,33 +6,15 @@ import models.LabWork;
 import network.Request;
 import network.Response;
 
-/**
- * Команда, которая заменяет значение по ключу, если новое значение больше старого.
- *
- * @author Малых Кирилл Романович
- * @version 1.0
- */
 public class ReplaceIfGreaterCommand implements Command{
-    /**
-     * Менеджер коллекции, из которой извлекают саму коллекцию элементов.
-     */
     private final CollectionManager collectionManager;
-
     private final DatabaseManager databaseManager;
 
-    /**
-     * Конструктор команды
-     * @param collectionManager менеджер коллекции, из которой извлекают саму коллекцию элементов.
-     */
     public ReplaceIfGreaterCommand(CollectionManager collectionManager, DatabaseManager databaseManager) {
         this.collectionManager = collectionManager;
         this.databaseManager = databaseManager;
     }
 
-    /**
-     * Выполнение логики команды.
-     * @param request аргумент команды, который является ключом элемента в коллекции.
-     */
     @Override
     public Response execute(Request request) {
         String key = request.getArgument();
@@ -55,7 +37,6 @@ public class ReplaceIfGreaterCommand implements Command{
             return new Response("\u001B[31mОшибка\u001B[0m: Элемент с ключом " + key + " не найден!", false);
         }
 
-        //ПРОВЕРКА ВЛАДЕЛЬЦА
         if (!oldElement.getOwnerLogin().equals(login)) {
             return new Response("\u001B[31mОшибка\u001B[0m: Вы не являетесь владельцем этого объекта. Замена запрещена.", false);
         }
@@ -84,9 +65,7 @@ public class ReplaceIfGreaterCommand implements Command{
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public String getDescription() {
         return "Заменяет значение по ключу, если новое значение больше старого";

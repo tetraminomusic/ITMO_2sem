@@ -45,11 +45,12 @@ public class CommandManager {
         commands.put("update", new UpdateCommand(collection, databaseManager));
         commands.put("remove_key", new RemovekeyCommand(collection, databaseManager));
         commands.put("clear", new ClearCommand(collection, databaseManager));
+        commands.put("auth", new AuthCommand());
         // Save доступна только серверу (можно вызвать вручную в коде сервера)
 
         //depracated
         commands.put("save", new SaveCommand(collection));
-        commands.put("execute_script", new ExecuteScriptCommand(this));
+        commands.put("execute_script", new ExecuteScriptCommand());
 
         commands.put("remove_lower", new RemoveLowerCommand(collection, databaseManager));
         commands.put("history", new HistoryCommand(history));

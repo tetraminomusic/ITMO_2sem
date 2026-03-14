@@ -98,18 +98,6 @@ public class UDPServer {
             logger.error("Не удалось отправить ответ клиенту {}: {}", clientAddress, e.getMessage());
         }
     }
-
-    /**
-     * Закрывает сетевой канал и освобождает сетевой порт.
-     */
-    public void close() {
-        try {
-            if (channel != null && channel.isOpen()) {
-                channel.close();
-                logger.info("Сетевой канал сервера успешно закрыт.");
-            }
-        } catch (IOException e) {
-            logger.error("Ошибка при закрытии сетевого канала: {}", e.getMessage());
-        }
-    }
 }
+
+

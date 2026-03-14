@@ -15,26 +15,10 @@ import java.util.concurrent.Executors;
  * Грузит данные из json файла. Получает запросы со стороны клиента. Если запрос пришёл удачно, то запрос передаётся в commandManager и отправляет ответ
  */
 public class ServerMain {
-    /**
-     * Главный логгер сервера
-     */
     private static final Logger logger = LoggerFactory.getLogger(ServerMain.class);
-
-    /**
-     * Порт, который слушает сервер
-     */
     private static final int PORT = 12345;
-
-    /**
-     * Пул потоков для обработки команд
-     * Пусть будет 10, хз
-     */
     private static final ExecutorService processingPool = Executors.newFixedThreadPool(10);
 
-    /**
-     * Точка входа в программу для сервера
-     *
-     */
     public static void main(String[] arg) throws IOException {
         String dbHost = System.getenv("DB_HOST");
         String dbName = System.getenv("DB_NAME");

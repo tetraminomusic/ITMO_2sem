@@ -5,16 +5,7 @@ import managers.CollectionManager;
 import network.Request;
 import network.Response;
 
-/**
- * Команда, которая выводит ASCII изображение Гаврилова Антона Валерьевича с введённой фразе в "облаке".
- *
- * @author Малых Кирилл Романович
- * @version 1.0
- */
 public class GavrilovsayCommand implements Command {
-    /**
-     * ASCII изображение лектора по программированию
-     */
     private final String Gavrilov_art = """
             sbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbG                                                   u             \s
             bMMMMMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKMMMAx eghiiiiiifglifg7WbN y T                           HAO8jhigegdjh\s
@@ -54,16 +45,9 @@ public class GavrilovsayCommand implements Command {
             sbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbA      xf                k                                        \s 
                 """;
 
-    /**
-     * Конструктор команды.
-     */
     public GavrilovsayCommand() {
     }
 
-    /**
-     * Выполнение логики команды.
-     * @param request строка, которую "скажет" Антон Валерьевич. Аргумент может быть null.
-     */
     @Override
     public Response execute(Request request) {
         String argument = request.getArgument();
@@ -80,9 +64,6 @@ public class GavrilovsayCommand implements Command {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getDescription() {
         return "описание тут излишне";

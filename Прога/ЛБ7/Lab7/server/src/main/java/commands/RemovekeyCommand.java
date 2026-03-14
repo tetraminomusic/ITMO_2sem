@@ -5,38 +5,16 @@ import managers.DatabaseManager;
 import network.Request;
 import network.Response;
 
-/**
- * Команда, которая удаляет элемент коллекции по его ключу.
- *
- * @author Малых Кирилл Романович
- * @update Адаптация для работы с БД
- * @version 1.0
- */
-public class RemovekeyCommand implements Command {
-    /**
-     * Менеджер коллекции, из которого извлекается сама коллекция.
-     */
-    private final CollectionManager collectionManager;
 
-    /**
-     * Менеджер управления БД
-     */
+public class RemovekeyCommand implements Command {
+    private final CollectionManager collectionManager;
     private final DatabaseManager databaseManager;
 
-    /**
-     * Конструктор команды.
-     * @param collectionManager менеджер коллекции, из которой извлекается сама коллекция
-     */
     public RemovekeyCommand(CollectionManager collectionManager, DatabaseManager databaseManager) {
         this.databaseManager = databaseManager;
         this.collectionManager = collectionManager;
     }
 
-    /**
-     * Выполнение логики команды.
-     * @new Теперь обращается к БД
-     * @param request аргумент команды, являющийся ID элемента, который мы хотим удалить из коллекции.
-     */
     @Override
     public Response execute(Request request) {
         String key = request.getArgument();
@@ -51,9 +29,6 @@ public class RemovekeyCommand implements Command {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getDescription() {
         return "Удаляет элемент из коллекции по его ключу";

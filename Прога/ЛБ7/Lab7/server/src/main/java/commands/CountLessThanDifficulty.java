@@ -5,28 +5,14 @@ import models.Difficulty;
 import network.Request;
 import network.Response;
 
-/**
- * Команда, выводящая количество элементов, значение поля difficulty которых меньше заданного
- *
- * @author Малых Кирилл Романович
- * @version 1.0
- */
+
 public class CountLessThanDifficulty implements Command{
-    /** Менеджер коллекций, к которому обращается команда для вывода элементов коллекции */
     private final CollectionManager collectionManager;
 
-    /**
-     * Конструктор команды
-     * @param collectionManager менеджер коллекции, из которой берём нужные нам элементы
-     */
     public CountLessThanDifficulty(CollectionManager collectionManager) {
         this.collectionManager = collectionManager;
     }
 
-    /**
-     * Выполнение логики команды
-     * @param request строковое представление сложности (константа из enum Difficulty)
-     */
     @Override
     public Response execute(Request request) {
         String arg = request.getArgument();
@@ -46,9 +32,6 @@ public class CountLessThanDifficulty implements Command{
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getDescription() {
         return "Выводит количество элементов, значение difficulty которых меньше заданного";
