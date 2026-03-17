@@ -12,18 +12,33 @@ import java.util.concurrent.Executors;
 
 /**
  * Точка входа для сервера
- * Грузит данные из json файла. Получает запросы со стороны клиента. Если запрос пришёл удачно, то запрос передаётся в commandManager и отправляет ответ
+ * Класс инициализирует все системы сервера, настраивает безопасное выключение сервера и обеспечивает многопоток сетевых запросов
  */
 public class ServerMain {
+    /**
+     * Логгер для записи логов по потокам в консоль сервера
+     */
     private static final Logger logger = LoggerFactory.getLogger(ServerMain.class);
+    /**
+     * Порт для получения UDP пакетов со стороны клиента
+     */
     private static final int PORT = 12345;
+    /**
+     * Пул потоков, которые используются для распараллеливания процесса обработки данных на стороне сервера
+     */
     private static final ExecutorService processingPool = Executors.newFixedThreadPool(10);
 
+    /**
+     * Точка входа в программу
+     * @param arg
+     * @throws IOException ошибки при неудачной передачи пакетов по сети
+     */
     public static void main(String[] arg) throws IOException {
-        String dbHost = System.getenv("DB_HOST");
-        String dbName = System.getenv("DB_NAME");
-        String dbUser = System.getenv("DB_USER");
-        String dbPass = System.getenv("DB_PASS");
+        //данные от бд вытаскиваются из соответствующих переменных окружения
+        String dbHost = System.getenv("DB_HOST"); // хост бд
+        String dbName = System.getenv("DB_NAME"); // имя бд
+        String dbUser = System.getenv("DB_USER"); // юзер бд
+        String dbPass = System.getenv("DB_PASS"); // пароль юзера бд
 
         if (dbPass == null) {
             logger.error("Переменная окружения DB_PASS не установлена");
@@ -42,7 +57,7 @@ public class ServerMain {
         CommandManager commandManager = new CommandManager(collectionManager, databaseManager);
         UDPServer udpServer = new UDPServer(PORT);
 
-        //при выключении программы мы должны закрыть соединение и закрыть потоки
+        //при выключении программы мы должны закрыть соединение и закрыть пул потоков
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             logger.info("Завершение работы сервера");
             databaseManager.close();
@@ -51,22 +66,22 @@ public class ServerMain {
         }));
 
         while (true) {
-            //читаем запрос, используя многопоток. Таким образом, мы можем отдать десериализацию другому потоку, пока поток чтения считывает новые данные
+            // читаем запрос, используя многопоток. Таким образом, мы можем отдать десериализацию другому потоку, пока поток чтения считывает новые данные
             try {
                 var request = udpServer.receiveRequest();
 
                 if (request != null) {
                     //создаём поток, который будет распаковывать и анализировать запрос
                     new Thread(() -> {
-                        //отправляем задачу в Fixed Thread Pool
 
+                        //отправляем задачу в пул
                         processingPool.submit(() -> {
                             logger.info("Обработка запроса '{}' от {}", request.getCommandName(), request.getLogin());
 
                             //выполняем команду и получаем ответ
                             var response = commandManager.handle(request);
 
-                            //для многопоточной отправки использовать новый поток
+                            //для многопоточной отправки использовать новый поток (ТЗ 3 про многопоток)
                             new Thread(() -> {
                                 udpServer.sendResponse(response, request.getClientAddress());
                             }).start();

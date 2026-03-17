@@ -11,9 +11,12 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 
 /**
  * Менеджер коллекции, который управляет основной работой коллекции.
+ * Может возвращать информацию о коллекции и считывает коллекцию с БД
  *
  * @author Малых Кирилл Романович
  * @version 1.0
@@ -23,7 +26,7 @@ public class CollectionManager {
      * Сама коллекция.
      * @new Теперь коллекция синхронизированная, чтобы к ней можно было обратиться только в одной потоке одновременно.
      */
-    private final Map<String, LabWork> collection = Collections.synchronizedMap(new LinkedHashMap<>());
+    private final Map<String, LabWork> collection = new ConcurrentHashMap<>();
     /**
      * Менеджер БД для загрузки данных
      */

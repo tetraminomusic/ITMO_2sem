@@ -73,6 +73,21 @@ public class Person implements Serializable {
         this.passportID = passportID;
     }
 
+    /**
+     * Возвращает строковое представление данных автора.
+     * @return отформатированная строка с данными автора.
+     */
+    @Override
+    public String toString() {
+        return "Person{" +
+                "name='" + name + '\'' +
+                ", birthday=" + (birthday != null ? birthday.format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) : "null") +
+                ", height=" + height +
+                ", weight=" + (weight != null ? weight : "null") +
+                ", passportID='" + (passportID != null ? passportID : "null") + '\'' +
+                '}';
+    }
+
     public String getName() {
         return name;
     }

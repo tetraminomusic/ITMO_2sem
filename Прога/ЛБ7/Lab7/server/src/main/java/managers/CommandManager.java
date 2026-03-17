@@ -14,6 +14,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Менеджер команд для серверной части.
  * Принимает объект Request, находит нужную команду и возвращает Response.
+ * Также отвечает за команду History
  */
 public class CommandManager {
     /**
