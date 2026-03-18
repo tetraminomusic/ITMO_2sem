@@ -11,8 +11,8 @@ V7: WORD $default, 0x180
 ORG 0x042
 X: WORD ?
 
-min: WORD
-max: WORD
+min: WORD 0xFFD7
+max: WORD 0x002B
 
 temp_int2: WORD ?
 
@@ -38,6 +38,7 @@ START:
 	LD #0xA ; (1000|0010 = 1010)
 	OUT 5
 	LD #0xB ; (1000 | 0011 = 1011)
+	OUT 7
 	EI
 
 
@@ -84,9 +85,10 @@ int3:
 check:
 check_min:
 	CMP min
-	BPL check_max 
+	BGE check_max 
 check_max:
 	CMP max
-	BMI return
+	BLT return
+	JUMP load_max
 load_max: LD max
 return: RET
