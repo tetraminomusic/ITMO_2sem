@@ -47,37 +47,34 @@ START:
 body:
 	DI
 	LD X
-	SUB 0x3
+	DEC
+	DEC
+	DEC
 	CALL check
 	ST X
+	NOP
 	EI
 	JUMP body
 	
 ; Подпрограмма прерывания для ВУ-2
 
 int2:
-	DI
 	ST temp_int2
-	NOP
 	IN 4
 	OR temp_int2
 	ST X
 	NOP
-	EI
 	IRET
 
 ; Подпрограмма прерывания для ВУ-3
 	
 int3:
-	DI
-	NOP
 	LD X
 	ASL
 	ADD X
 	SUB #0x3
 	OUT 6
 	NOP
-	EI
 	IRET
 
 ; Подпрограмма для проверки X на ОДЗ
