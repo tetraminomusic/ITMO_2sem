@@ -1,0 +1,37 @@
+clear
+info
+insert lab_easy
+Лаба по проге
+10
+10
+5.5
+Первая попытка
+1
+VERY_EASY
+Антон Валерьевич
+01.01.1980
+180
+75.5
+PASSPORT_123
+insert lab_hard
+Лаба по матану
+20
+20
+15.0
+Тяжело
+2
+HARD
+
+show
+update lab_hard
+Лаба по матану 2.0
+30
+30
+20.0
+Очень тяжело
+3
+HOPELESS
+
+show
+remove_key lab_easy
+show

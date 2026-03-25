@@ -1,0 +1,393 @@
+@startuml
+class ExecuteScriptCommand {
+- UDPClient udpClient
+- LabWorkAsker asker
+- List<String> objectCommands
+- {static} Set<String> runningScripts
++ void execute(String,String,String)
++ String getDescription()
+}
+
+
+class commands.ExecuteScriptCommand {
++ Response execute(Request)
++ String getDescription()
+}
+
+class models.LabWork {
+- {static} long serialVersionUID
+- Integer id
+- String ownerLogin
+- String name
+- Coordinates coordinates
+- LocalDateTime creationDate
+- float minimalPoint
+- String description
+- Integer tunedInWorks
+- Difficulty difficulty
+- Person author
++ int compareTo(LabWork)
++ String toString()
++ Integer getId()
++ String getName()
++ float getMinimalPoint()
++ Difficulty getDifficulty()
++ Coordinates getCoordinates()
++ Person getAuthor()
++ void setID(Integer)
++ void setCreationDate(java.time.LocalDateTime)
++ java.time.LocalDateTime getCreationDate()
++ String getOwnerLogin()
++ String getDescription()
++ Integer getTunedInWorks()
++ void setOwnerLogin(String)
+}
+
+
+class network.Request {
+- {static} long serialVersionUID
+- String commandName
+- String argument
+- LabWork objectArgument
+- String login
+- String password
+- SocketAddress clientAddress
++ String getCommandName()
++ String getArgument()
++ LabWork getObjectArgument()
++ void setClientAddress(SocketAddress)
++ SocketAddress getClientAddress()
++ String getLogin()
++ String getPassword()
+}
+
+
+class commands.memes.PolyakovCommand {
+- int MAX_ADDITIONS
+- String lexicon(String)
++ Response execute(Request)
++ String getDescription()
+}
+
+
+class ClientMain {
+- {static} String SERVER_HOST
+- {static} int SERVER_PORT
+- {static} List<String> COMMANDS_WITH_OBJECT
++ {static} void main(String[])
+}
+
+
+enum models.Difficulty {
++  VERY_EASY
++  HARD
++  HOPELESS
+}
+
+class commands.UpdateCommand {
+- CollectionManager collectionManager
+- DatabaseManager databaseManager
++ Response execute(Request)
++ String getDescription()
+}
+
+
+class managers.CommandManager {
+- {static} Logger logger
+- Map<String,Command> commands
+- List<String> history
+- DatabaseManager databaseManager
++ Response handle(Request)
+- void addToHistory(String)
+}
+
+
+class commands.InfoCommand {
+- CollectionManager collectionManager
++ Response execute(Request)
++ String getDescription()
+}
+
+
+class commands.ShowCommand {
+- CollectionManager collectionManager
++ Response execute(Request)
++ String getDescription()
+}
+
+
+class managers.LabWorkAsker {
+- LineReader reader
+- Scanner scriptScanner
+- DateTimeFormatter formatter
+- {static} String RED
+- {static} String RESET
++ void setScriptScanner(Scanner)
+- String askString(String,boolean)
+- float askFloat(String,boolean)
++ Difficulty askDifficulty()
++ float askMinimalPoint()
+- Long askLong(String,Long,Long,boolean)
+- LocalDateTime askDate(String)
+- Integer askInt(String,boolean)
+- Double askWeight(String,boolean)
+- String askPassport(String,boolean)
++ Coordinates askCoordinates()
++ Person askPerson()
++ LabWork createLabWork()
+}
+
+
+class commands.ReplaceIfGreaterCommand {
+- CollectionManager collectionManager
+- DatabaseManager databaseManager
++ Response execute(Request)
++ String getDescription()
+}
+
+
+class commands.AuthCommand {
++ Response execute(Request)
++ String getDescription()
+}
+
+class ClientApp {
+- UDPClient udpClient
+- LineReader lineReader
+- LabWorkAsker asker
+- ExecuteScriptCommand scriptExecutor
+- List<String> commandsWithObject
+- String login
+- String password
++ void start()
+- boolean authenticate()
+- void runCommandLoop()
+- void handleExit()
+- void handleExecuteScript(String)
+- void handleUpdate(String,String)
+- void sendStandardCommand(String,String)
+}
+
+
+class commands.memes.GavrilovsayCommand {
+- String Gavrilov_art
++ Response execute(Request)
++ String getDescription()
+}
+
+
+class managers.DatabaseManager {
+- {static} Logger logger
+- String url
+- String user
+- String password
+- Connection connection
++ void connect()
++ Connection getConnection()
++ void close()
++ boolean authenticate(String,String)
+- boolean registerUser(String,String)
++ boolean deleteLabWork(int,String)
++ int insertLabWork(LabWork,String)
++ boolean updateLabWork(int,LabWork,String)
++ boolean clearUserObjects(String)
+}
+
+
+class network.SerializationUtils {
++ {static} byte[] serialize(Object)
++ {static} Object deserialize(byte[])
+}
+
+class models.Coordinates {
+- {static} long serialVersionUID
+- long x
+- long y
++ String toString()
++ int compareTo(Coordinates)
++ long getX()
++ long getY()
+}
+
+
+class commands.HelpCommand {
+- Map<String,Command> commands
++ Response execute(Request)
++ String getDescription()
+}
+
+
+class network.Response {
+- {static} long serialVersionUID
+- String message
+- boolean success
++ String getMessage()
++ boolean getSuccess()
+}
+
+
+class commands.InsertCommand {
+- {static} Logger logger
+- CollectionManager collectionManager
+- DatabaseManager databaseManager
++ Response execute(Request)
++ String getDescription()
+}
+
+
+class models.Person {
+- {static} long serialVersionUID
+- String name
+- LocalDateTime birthday
+- float height
+- Double weight
+- String passportID
++ String getName()
++ float getHeight()
++ Double getWeight()
++ String getPassportID()
++ LocalDateTime getBirthday()
+}
+
+
+class commands.GroupCountingByMinimalCommand {
+- CollectionManager collectionManager
++ Response execute(Request)
++ String getDescription()
+}
+
+
+class managers.UDPClient {
+- DatagramSocket socket
+- InetSocketAddress serverAddress
++ void sendRequest(Request)
++ Response receiveResponse()
++ void close()
+}
+
+
+class commands.CountLessThanDifficulty {
+- CollectionManager collectionManager
++ Response execute(Request)
++ String getDescription()
+}
+
+
+class commands.PrintFieldDescendingMinimalPointCommand {
+- CollectionManager collectionManager
++ Response execute(Request)
++ String getDescription()
+}
+
+
+class commands.RemovekeyCommand {
+- CollectionManager collectionManager
+- DatabaseManager databaseManager
++ Response execute(Request)
++ String getDescription()
+}
+
+
+class network.PasswordHasher {
++ {static} String hashPassword(String)
+}
+
+class commands.ClearCommand {
+- CollectionManager collectionManager
+- DatabaseManager databaseManager
++ Response execute(Request)
++ String getDescription()
+}
+
+
+class commands.RemoveLowerCommand {
+- CollectionManager collectionManager
+- DatabaseManager databaseManager
++ Response execute(Request)
++ String getDescription()
+}
+
+
+class ServerMain {
+- {static} Logger logger
+- {static} int PORT
+- {static} ExecutorService processingPool
++ {static} void main(String[])
+}
+
+
+class managers.CollectionManager {
+- Map<String,LabWork> collection
+- DatabaseManager databaseManager
+- LocalDateTime lastInitTime
++ Map<String,LabWork> getCollection()
++ String info()
++ boolean isEmpty()
++ void loadFromDatabase()
+}
+
+
+interface commands.Command {
+~ Response execute(Request)
+~ String getDescription()
+}
+
+class network.RawPacket {
+- byte[] data
+- SocketAddress address
++ byte[] getData()
++ SocketAddress getAddress()
++ void setAddress(SocketAddress)
++ void setData(byte[])
+}
+
+
+class network.UDPServer {
+- {static} Logger logger
+- DatagramChannel channel
++ Request receiveRequest()
++ void sendResponse(Response,SocketAddress)
+}
+
+
+class commands.SaveCommand {
+- CollectionManager collectionManager
++ Response execute(Request)
++ String getDescription()
+}
+
+
+class commands.HistoryCommand {
+- List<String> history
++ Response execute(Request)
++ String getDescription()
+}
+
+
+
+
+commands.Command <|.. commands.ExecuteScriptCommand
+models.Comparable <|.. models.LabWork
+java.io.Serializable <|.. models.LabWork
+java.io.Serializable <|.. network.Request
+commands.Command <|.. commands.memes.PolyakovCommand
+commands.Command <|.. commands.UpdateCommand
+commands.Command <|.. commands.InfoCommand
+commands.Command <|.. commands.ShowCommand
+commands.Command <|.. commands.ReplaceIfGreaterCommand
+commands.Command <|.. commands.AuthCommand
+commands.Command <|.. commands.memes.GavrilovsayCommand
+java.io.Serializable <|.. models.Coordinates
+commands.Command <|.. commands.HelpCommand
+java.io.Serializable <|.. network.Response
+commands.Command <|.. commands.InsertCommand
+java.io.Serializable <|.. models.Person
+commands.Command <|.. commands.GroupCountingByMinimalCommand
+commands.Command <|.. commands.CountLessThanDifficulty
+commands.Command <|.. commands.PrintFieldDescendingMinimalPointCommand
+commands.Command <|.. commands.RemovekeyCommand
+commands.Command <|.. commands.ClearCommand
+commands.Command <|.. commands.RemoveLowerCommand
+commands.Command <|.. commands.SaveCommand
+commands.Command <|.. commands.HistoryCommand
+@enduml
