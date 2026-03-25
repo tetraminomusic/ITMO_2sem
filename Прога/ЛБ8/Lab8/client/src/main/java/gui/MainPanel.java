@@ -162,4 +162,10 @@ public class MainPanel extends JPanel implements LocaleChangeListener {
             tableColumn.setPreferredWidth(Math.min(width, 300));
         }
     }
+
+    public JTable getTable() {
+        return labTable;
+    }
+
+
 }

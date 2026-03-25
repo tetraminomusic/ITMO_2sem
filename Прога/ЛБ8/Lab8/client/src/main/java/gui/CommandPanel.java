@@ -4,6 +4,7 @@ import java.util.List;
 import i18n.LocaleChangeListener;
 import i18n.ResourceManager;
 import managers.UDPClient;
+import models.Difficulty;
 import models.LabWork;
 import models.Person;
 import network.Request;
@@ -242,6 +243,367 @@ public class CommandPanel extends JPanel implements LocaleChangeListener {
 
 
 
+        //UPDATE
+
+        btnUpdate.addActionListener(e -> {
+            ResourceManager i18n = ResourceManager.getInstance();
+
+            String idStr = mainFrame.getSelectedId();
+
+            if (idStr == null) {
+                JOptionPane.showMessageDialog(mainFrame, "Сначала выберете объект в таблице для редактирования!", i18n.getString("info.title"), JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            try {
+                int id = Integer.parseInt(idStr);
+
+                LabWork oldLab = mainFrame.getLabWorkById(id);
+
+                if (oldLab == null) {
+                    JOptionPane.showMessageDialog(mainFrame, "Объект не найден в локальной памяти");
+                    return;
+                }
+
+                //открываем форму
+
+                LabWorkFormDialog dialog = new LabWorkFormDialog(parentFrame, i18n.getString("form.title.update"), oldLab);
+                dialog.setVisible(true);
+
+                LabWork updatedLab = dialog.getResult();
+
+                if (updatedLab != null) {
+                    new SwingWorker<Response, Void>() {
+                        @Override
+                        protected Response doInBackground() throws Exception {
+                            Request req = new Request("update", String.valueOf(id), updatedLab, login, password);
+                            udpClient.sendRequest(req);
+                            return udpClient.receiveResponse();
+                        }
+
+                        @Override
+                        protected void done() {
+                            try {
+                                Response resp = get();
+                                if (resp.getSuccess()) {
+                                    //если сервер дал добро на обновление, то делаем
+                                    JOptionPane.showMessageDialog(mainFrame, resp.getMessage());
+                                    if (resp.getCollection() != null) {
+                                        mainFrame.updateTableData(resp.getCollection());
+                                    }
+                                } else {
+                                    JOptionPane.showMessageDialog(mainFrame, resp.getMessage(), i18n.getString("error.title"), JOptionPane.ERROR_MESSAGE);
+                                }
+                            } catch (Exception e) {
+                                JOptionPane.showMessageDialog(mainFrame, "Ошибка сети: " + e.getMessage());
+                            }
+                        }
+                    }.execute();
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(mainFrame,  "Ошибка чтения ID строки");
+            }
+
+        });
+
+
+        //DELETE
+
+        btnRemove.addActionListener(e -> {
+            ResourceManager i18n = ResourceManager.getInstance();
+
+            String selectedId = mainFrame.getSelectedId();
+
+            if (selectedId == null || selectedId.isEmpty()) {
+                JOptionPane.showMessageDialog(
+                        mainFrame,
+                        i18n.getString("err.validation.empty"),
+                        i18n.getString("info.title"),
+                        JOptionPane.WARNING_MESSAGE
+                );
+                return;
+            }
+
+            //спрашиваем подтверждение удаления
+
+            String confirmMessage = i18n.getFormatted("dialog.delete.condifm", selectedId);
+
+            int choice = JOptionPane.showConfirmDialog(
+                    mainFrame,
+                    confirmMessage,
+                    i18n.getString("dialog.confirm.title"),
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE
+            );
+
+            if (choice == JOptionPane.YES_OPTION) {
+                new SwingWorker<Response, Void>(){
+                    @Override
+                    protected Response doInBackground() throws Exception {
+                        Request request = new Request("remove_key", selectedId, null, login, password);
+                        udpClient.sendRequest(request);
+                        return udpClient.receiveResponse();
+                    }
+
+                    @Override
+                    protected void done() {
+                        try {
+                            Response response = get();
+                            if (response.getSuccess()) {
+                                JOptionPane.showMessageDialog(
+                                        mainFrame,
+                                        response.getMessage(),
+                                        i18n.getString("info.title"),
+                                        JOptionPane.INFORMATION_MESSAGE
+                                );
+                                if (response.getCollection() != null) {
+                                    mainFrame.updateTableData(response.getCollection());
+                                }
+                            } else {
+                                JOptionPane.showMessageDialog(
+                                        mainFrame,
+                                        response.getMessage(),
+                                        i18n.getString("error.title"),
+                                        JOptionPane.ERROR_MESSAGE
+                                );
+                            }
+                        } catch (Exception e) {
+                            JOptionPane.showMessageDialog(
+                                    mainFrame,
+                                    "Ошибка сети: " + e.getMessage(),
+                                    i18n.getString("error.title"),
+                                    JOptionPane.ERROR_MESSAGE
+                            );
+                        }
+                    }
+                }.execute();
+            }
+        });
+
+
+        //REMOVE LOWER
+
+        btnRemoveLower.addActionListener(e -> {
+            ResourceManager i18n = ResourceManager.getInstance();
+
+            // 1. Открываем окно ввода для создания "эталона"
+            // Используем тот же диалог, что и для insert, но с другим заголовком
+            LabWorkFormDialog dialog = new LabWorkFormDialog(parentFrame, i18n.getString("form.title.remove_lower"), null);
+            dialog.setVisible(true); // Программа ждет, пока пользователь не закроет диалог
+
+            // 2. Получаем созданный объект (эталон для сравнения)
+            LabWork referenceLab = dialog.getResult();
+
+            // 3. Если пользователь нажал "Отмена" или просто закрыл окно
+            if (referenceLab == null) {
+                return;
+            }
+
+            // 4. Если объект создан, отправляем его на сервер для массового удаления
+            new SwingWorker<Response, Void>() {
+                @Override
+                protected Response doInBackground() throws Exception {
+                    // Формируем запрос. В argument передаем пустоту, в objectArgument - наш эталон
+                    Request req = new Request("remove_lower", "", referenceLab, login, password);
+                    udpClient.sendRequest(req);
+                    return udpClient.receiveResponse();
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        Response resp = get();
+                        if (resp.getSuccess()) {
+                            // Если удаление прошло успешно (сервер вернет количество удаленных)
+                            JOptionPane.showMessageDialog(
+                                    mainFrame,
+                                    resp.getMessage(),
+                                    i18n.getString("info.title"),
+                                    JOptionPane.INFORMATION_MESSAGE
+                            );
+
+                            // Обновляем таблицу (удаленные объекты исчезнут)
+                            if (resp.getCollection() != null) {
+                                mainFrame.updateTableData(resp.getCollection());
+                            }
+                        } else {
+                            // Если произошла ошибка на сервере
+                            JOptionPane.showMessageDialog(
+                                    mainFrame,
+                                    resp.getMessage(),
+                                    i18n.getString("error.title"),
+                                    JOptionPane.ERROR_MESSAGE
+                            );
+                        }
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(mainFrame, "Ошибка сети: " + ex.getMessage());
+                    }
+                }
+            }.execute();
+        });
+
+
+
+        // Replace if Greater
+
+        btnReplaceIfGreater.addActionListener(e -> {
+            ResourceManager i18n = ResourceManager.getInstance();
+
+            // 1. Узнаем ID выбранной строки из таблицы
+            String selectedId = mainFrame.getSelectedId();
+
+            if (selectedId == null || selectedId.isEmpty()) {
+                JOptionPane.showMessageDialog(
+                        mainFrame,
+                        "Сначала выберите объект в таблице для замены!",
+                        i18n.getString("info.title"),
+                        JOptionPane.WARNING_MESSAGE
+                );
+                return;
+            }
+
+            try {
+                int id = Integer.parseInt(selectedId);
+
+                // Получаем старый объект из памяти для информативности (опционально)
+                LabWork oldLab = mainFrame.getLabWorkById(id);
+                if (oldLab == null) {
+                    JOptionPane.showMessageDialog(mainFrame, "Объект не найден в локальной памяти.");
+                    return;
+                }
+
+                // 2. Открываем окно для ввода данных "Претендента"
+                // Передаем null, так как мы создаем НОВЫЙ объект с нуля, а не редактируем старый
+                LabWorkFormDialog dialog = new LabWorkFormDialog(parentFrame, "Создание претендента на замену", null);
+                dialog.setVisible(true); // Программа ждет закрытия окна
+
+                // 3. Получаем созданный объект
+                LabWork newLab = dialog.getResult();
+
+                // 4. Если пользователь нажал "Отмена"
+                if (newLab == null) {
+                    return;
+                }
+
+                // 5. Отправляем запрос на сервер в фоновом потоке
+                new SwingWorker<Response, Void>() {
+                    @Override
+                    protected Response doInBackground() throws Exception {
+                        // В argument передаем ID старого объекта, в objectArgument - нового претендента
+                        Request req = new Request("replace_if_greater", selectedId, newLab, login, password);
+                        udpClient.sendRequest(req);
+                        return udpClient.receiveResponse();
+                    }
+
+                    @Override
+                    protected void done() {
+                        try {
+                            Response resp = get();
+                            if (resp.getSuccess()) {
+                                // Показываем сообщение ("Замена произведена")
+                                JOptionPane.showMessageDialog(
+                                        mainFrame,
+                                        resp.getMessage(),
+                                        i18n.getString("info.title"),
+                                        JOptionPane.INFORMATION_MESSAGE
+                                );
+
+                                // Обновляем таблицу (старый объект исчезнет, появится новый)
+                                if (resp.getCollection() != null) {
+                                    mainFrame.updateTableData(resp.getCollection());
+                                }
+                            } else {
+                                // Если сервер отказал (чужой объект или новый оказался меньше)
+                                JOptionPane.showMessageDialog(
+                                        mainFrame,
+                                        resp.getMessage(),
+                                        i18n.getString("error.title"),
+                                        JOptionPane.ERROR_MESSAGE
+                                );
+                            }
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(mainFrame, "Ошибка сети: " + ex.getMessage());
+                        }
+                    }
+                }.execute();
+
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(mainFrame, "Ошибка чтения ID строки.");
+            }
+        });
+
+        // --- КНОПКА "КОЛ-ВО < СЛОЖНОСТИ" (count_less_than_difficulty) ---
+        btnCountLessThanDifficulty.addActionListener(e -> {
+            ResourceManager i18n = ResourceManager.getInstance();
+
+            // 1. Создаем выпадающий список из констант Enum Difficulty
+            JComboBox<Difficulty> difficultyBox = new JComboBox<>(Difficulty.values());
+
+            // 2. Показываем простое диалоговое окно с этим списком
+            int result = JOptionPane.showConfirmDialog(
+                    mainFrame,
+                    difficultyBox,
+                    i18n.getString("stat.count_diff"), // Заголовок окна
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE
+            );
+
+            // 3. Если пользователь нажал "ОК"
+            if (result == JOptionPane.OK_OPTION) {
+                // Получаем выбранную сложность
+                Difficulty selectedDifficulty = (Difficulty) difficultyBox.getSelectedItem();
+
+                if (selectedDifficulty != null) {
+                    // 4. Отправляем запрос на сервер в фоновом потоке
+                    new SwingWorker<Response, Void>() {
+                        @Override
+                        protected Response doInBackground() throws Exception {
+
+                            // ИСПРАВЛЕНИЕ: Передаем имя константы (например, "HARD") как аргумент
+                            String difficultyArg = selectedDifficulty.name();
+                            Request req = new Request("count_less_difficulty", difficultyArg, null, login, password);
+
+                            udpClient.sendRequest(req);
+                            return udpClient.receiveResponse();
+                        }
+
+                        @Override
+                        protected void done() {
+                            try {
+                                Response resp = get();
+                                if (resp.getSuccess()) {
+                                    // Показываем результат (сервер должен прислать строку с количеством)
+                                    JOptionPane.showMessageDialog(
+                                            mainFrame,
+                                            resp.getMessage(),
+                                            i18n.getString("info.title"),
+                                            JOptionPane.INFORMATION_MESSAGE
+                                    );
+
+                                    // Обновляем таблицу (на всякий случай)
+                                    if (resp.getCollection() != null) {
+                                        mainFrame.updateTableData(resp.getCollection());
+                                    }
+                                } else {
+                                    JOptionPane.showMessageDialog(
+                                            mainFrame,
+                                            resp.getMessage(),
+                                            i18n.getString("error.title"),
+                                            JOptionPane.ERROR_MESSAGE
+                                    );
+                                }
+                            } catch (Exception ex) {
+                                JOptionPane.showMessageDialog(mainFrame, "Ошибка связи: " + ex.getMessage());
+                            }
+                        }
+                    }.execute();
+                }
+            }
+        });
+
+        btnPrintFieldDescendingMinimalPoint.addActionListener(e ->
+                fetchAndShowText("print_field_descending_minimal_point", i18n.getString("stat.print_min"))
+        );
 
         add(Box.createRigidArea(new Dimension(0, 10)));
         add(btnUpdate); // Добавили кнопку Update
@@ -367,6 +729,8 @@ public class CommandPanel extends JPanel implements LocaleChangeListener {
             }
         }.execute();
     }
+
+
 
     private String translateHistoryString(String raw) {
         ResourceManager i18n = ResourceManager.getInstance();

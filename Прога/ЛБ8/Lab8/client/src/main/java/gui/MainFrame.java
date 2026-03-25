@@ -112,4 +112,36 @@ public class MainFrame extends JFrame implements LocaleChangeListener {
             mainPanel.updateTableData(newData);
         }
     }
+
+    public LabWork getLabWorkById(int id) {
+        if (collection == null) return null;
+
+        return collection.stream()
+                .filter(lab -> lab.getId() == id)
+                .findFirst()
+                .orElse(null);
+    }
+
+    public String getSelectedId() {
+        //Проверяем, создана ли вообще панель с таблицей
+        if (mainPanel == null || mainPanel.getTable() == null) {
+            return null;
+        }
+
+        JTable table = mainPanel.getTable();
+
+        //Получаем индекс выделенной строки на экране
+        int selectedRow = table.getSelectedRow();
+
+        // Если ничего не выделено, метод возвращает -1
+        if (selectedRow == -1) {
+            return null;
+        }
+
+        int modelRow = table.convertRowIndexToModel(selectedRow);
+
+        Object idValue = table.getModel().getValueAt(modelRow, 0);
+
+        return idValue != null ? idValue.toString() : null;
+    }
 }
