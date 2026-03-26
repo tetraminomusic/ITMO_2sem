@@ -34,6 +34,8 @@ public class LoginFrame extends JFrame implements LocaleChangeListener {
 
         initComponents();
 
+
+
         ResourceManager.getInstance().addLocaleChangeListener(this);
         onLocaleChange();
 
@@ -150,20 +152,27 @@ public class LoginFrame extends JFrame implements LocaleChangeListener {
         JComboBox<Locale> langCombo = new JComboBox<>(ResourceManager.SUPPORTED_LOCALES.toArray(new Locale[0]));
         langCombo.setPreferredSize(new Dimension(200, 40));
 
+        langCombo.setSelectedItem(ResourceManager.getInstance().getCurrentLocale());
+
         langCombo.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 Locale l = (Locale) value;
                 String lang = l.getDisplayLanguage(l);
-                lang = lang.substring(0, 1).toUpperCase() + lang.substring(1);
+                if (lang.length() > 0) {
+                    lang = lang.substring(0, 1).toUpperCase() + lang.substring(1);
+                }
                 return super.getListCellRendererComponent(list, lang, index, isSelected, cellHasFocus);
             }
         });
 
         langCombo.addActionListener(e -> {
             Locale selected = (Locale) langCombo.getSelectedItem();
-            ResourceManager.getInstance().setLocale(selected);
+            if (selected != null) {
+                ResourceManager.getInstance().setLocale(selected);
+            }
         });
+
         add(langCombo, gbc);
 
         loginButton.addActionListener(e -> handleAuth());

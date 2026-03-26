@@ -8,11 +8,11 @@ import network.Response;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
-public class InsertCommand implements Command{
+public class InsertCommand implements Command {
     private static final Logger logger = LoggerFactory.getLogger(InsertCommand.class);
     private final CollectionManager collectionManager;
-
     private final DatabaseManager databaseManager;
+
     public InsertCommand(CollectionManager collectionManager, DatabaseManager databaseManager) {
         this.collectionManager = collectionManager;
         this.databaseManager = databaseManager;
@@ -23,28 +23,27 @@ public class InsertCommand implements Command{
         LabWork lab = request.getObjectArgument();
         String login = request.getLogin();
 
-        if (lab == null) return new Response("Ошибка: объект не передан", false, null);
+        if (lab == null) {
+            return new Response("server.msg.error_no_object", false, null);
+        }
 
-        //пытаемся сохранить в БД
         int newId = databaseManager.insertLabWork(lab, login);
 
         if (newId != -1) {
-            //если объект сохранился в БД
             lab.setID(newId);
             lab.setOwnerLogin(login);
 
-            //синхронизируем память
             collectionManager.getCollection().put(String.valueOf(newId), lab);
 
-            return new Response("Объект успешно добавлен (ID: " + newId + ")", true, null);
+            logger.info("Пользователь {} добавил объект с ID {}", login, newId);
+            return new Response("server.msg.insert_success", true, null, newId);
+
         } else {
-            return new Response("Ошибка при записи в БД", false, null);
+            logger.error("Ошибка записи в БД для пользователя {}", login);
+            return new Response("server.msg.error_db", false, null);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getDescription() {
         return "insert null {element} : добавить новый элемент с заданным ключом";

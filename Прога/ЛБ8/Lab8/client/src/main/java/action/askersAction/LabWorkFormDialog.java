@@ -1,4 +1,4 @@
-package gui;
+package action.askersAction;
 
 import i18n.ResourceManager;
 import models.Coordinates;

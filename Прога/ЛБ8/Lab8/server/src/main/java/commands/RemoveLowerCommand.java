@@ -5,11 +5,14 @@ import managers.DatabaseManager;
 import models.LabWork;
 import network.Request;
 import network.Response;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class RemoveLowerCommand implements Command{
+/**
+ * Команда для удаления объектов, которые меньше заданного эталона.
+ * Удаляет только объекты, принадлежащие текущему пользователю.
+ */
+public class RemoveLowerCommand implements Command {
     private final CollectionManager collectionManager;
     private final DatabaseManager databaseManager;
 
@@ -18,34 +21,34 @@ public class RemoveLowerCommand implements Command{
         this.collectionManager = collectionManager;
     }
 
-
     @Override
     public Response execute(Request request) {
-       LabWork ref = request.getObjectArgument();
-       String login = request.getLogin();
+        LabWork ref = request.getObjectArgument();
+        String login = request.getLogin();
 
-       //подбираем id тех, кто подходит под условие (ну и автор был обращающийся)
+        if (ref == null) {
+            return new Response("server.msg.error_no_object", false, null);
+        }
+
         List<Integer> idsToDelete = collectionManager.getCollection().values().stream()
                 .filter(lab -> lab.getOwnerLogin().equals(login))
                 .filter(lab -> lab.compareTo(ref) < 0)
                 .map(LabWork::getId)
                 .collect(Collectors.toList());
 
-        //удаляем их по одному в БД
         int count = 0;
-        for (int id: idsToDelete) {
+        for (int id : idsToDelete) {
             if (databaseManager.deleteLabWork(id, login)) {
                 collectionManager.getCollection().remove(String.valueOf(id));
                 count++;
             }
         }
 
-        return new Response("Удалено ваших элементов: " + count, true, null);
+        return new Response("server.msg.remove_lower_success", true, null, count);
     }
-
 
     @Override
     public String getDescription() {
-        return "Удаляет из коллекции все элементы, меньше заданного";
+        return "удалить из коллекции все элементы, меньшие, чем заданный (только свои)";
     }
 }

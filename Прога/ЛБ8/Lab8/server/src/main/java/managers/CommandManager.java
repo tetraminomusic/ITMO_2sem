@@ -108,7 +108,8 @@ public class CommandManager {
                 return new Response(
                         commandResponse.getMessage(),
                         commandResponse.getSuccess(),
-                        currentCollection
+                        currentCollection,
+                        commandResponse.getMessageArgs()
                 );
 
             } catch (Exception e) {

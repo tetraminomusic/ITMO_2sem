@@ -4,36 +4,39 @@ import managers.CollectionManager;
 import models.LabWork;
 import network.Request;
 import network.Response;
-
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.util.Map.Entry.comparingByValue;
-
-
-public class ShowCommand implements Command{
+/**
+ * Команда 'show'.
+ * Возвращает актуальный список объектов коллекции, отсортированный по местоположению.
+ */
+public class ShowCommand implements Command {
     private final CollectionManager collectionManager;
 
     public ShowCommand(CollectionManager collectionManager) {
         this.collectionManager = collectionManager;
     }
 
-
     @Override
     public Response execute(Request request) {
         var collection = collectionManager.getCollection();
 
         if (collection.isEmpty()) {
-            return new Response("Коллекция пуста.", true, new ArrayList<>());
+            return new Response("server.msg.empty", true, new ArrayList<>());
         }
-        java.util.List<LabWork> sortedList = collectionManager.getCollection().values().stream()
-                .sorted(java.util.Comparator.comparing(LabWork::getCoordinates))
-                .collect(java.util.stream.Collectors.toList());
-        return new Response("ОК", true, sortedList);
+
+        List<LabWork> sortedList = collection.values().stream()
+                .sorted(Comparator.comparing(LabWork::getCoordinates))
+                .collect(Collectors.toList());
+
+        return new Response("server.msg.success", true, sortedList);
     }
 
     @Override
     public String getDescription() {
-        return "Выводит все элементы коллекции в строковом представлении";
+        return "вывести все элементы коллекции";
     }
 }

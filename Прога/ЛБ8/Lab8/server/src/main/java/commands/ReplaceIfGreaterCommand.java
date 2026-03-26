@@ -6,7 +6,7 @@ import models.LabWork;
 import network.Request;
 import network.Response;
 
-public class ReplaceIfGreaterCommand implements Command{
+public class ReplaceIfGreaterCommand implements Command {
     private final CollectionManager collectionManager;
     private final DatabaseManager databaseManager;
 
@@ -19,56 +19,48 @@ public class ReplaceIfGreaterCommand implements Command{
     public Response execute(Request request) {
         String key = request.getArgument();
         String login = request.getLogin();
-        LabWork newElement = request.getObjectArgument();
 
-        //Базовые проверки
-        if (key == null || key.isEmpty()) {
-            return new Response("Ошибка: Введите ключ (ID) после команды!", false, null);
-        }
-
-        if (newElement == null) {
-            return new Response("Ошибка: Данные объекта не получены", false, null);
-        }
-
-        //Ищем старый элемент в памяти
+        // 1. Ищем старый элемент
         LabWork oldElement = collectionManager.getCollection().get(key);
-
         if (oldElement == null) {
-            return new Response("Ошибка: Элемент с ключом " + key + " не найден!", false, null);
+            return new Response("server.msg.not_found", false, null);
         }
 
+        // 2. ПРОВЕРКА ПРАВ (Самое важное!)
         if (!oldElement.getOwnerLogin().equals(login)) {
-            return new Response("Ошибка: Вы не являетесь владельцем этого объекта. Замена запрещена.", false, null);
+            return new Response("server.msg.access_denied", false, null);
         }
 
-        //СРАВНЕНИЕ (compareTo)
-        if (newElement.compareTo(oldElement) > 0) {
+        // 3. ПРОВЕРКА: "Dry Run" или реальная замена?
+        LabWork newElement = request.getObjectArgument();
+        if (newElement == null) {
+            // Клиент просто проверяет, можно ли ему трогать этот ID
+            return new Response("server.msg.id_confirmed", true, null);
+        }
 
-            //Пытаемся обновить в БАЗЕ ДАННЫХ
-            //Поскольку мы заменяем "тело" объекта, сохраняя "слот", используем updateLabWork
+        // 4. Реальная логика сравнения и замены
+        if (newElement.compareTo(oldElement) > 1) {
             int id = oldElement.getId();
             if (databaseManager.updateLabWork(id, newElement, login)) {
 
-                //СИНХРОНИЗИРУЕМ ПАМЯТЬ
+                // Синхронизация памяти
                 newElement.setID(id);
                 newElement.setOwnerLogin(login);
-                newElement.setCreationDate(oldElement.getCreationDate()); // Сохраняем оригинальную дату
+                newElement.setCreationDate(oldElement.getCreationDate());
 
                 collectionManager.getCollection().put(key, newElement);
 
-                return new Response("Успех: Новый элемент больше старого. Замена произведена в БД и памяти.", true, null);
+                return new Response("server.msg.replace_greater_success", true, null);
             } else {
-                return new Response("Ошибка: Не удалось обновить запись в базе данных.", false, null);
+                return new Response("server.msg.error_db", false, null);
             }
         } else {
-            return new Response("Замена не произведена: Новый элемент меньше или равен старому.", true, null);
+            return new Response("server.msg.replace_greater_fail", true, null);
         }
     }
 
-
     @Override
     public String getDescription() {
-        return "Заменяет значение по ключу, если новое значение больше старого";
+        return "replace_if_greater null {element} : замена, если новое значение больше";
     }
-
 }

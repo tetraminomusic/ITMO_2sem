@@ -5,8 +5,10 @@ import models.Difficulty;
 import network.Request;
 import network.Response;
 
-
-public class CountLessThanDifficulty implements Command{
+/**
+ * Команда для подсчета элементов, сложность которых ниже заданной.
+ */
+public class CountLessThanDifficulty implements Command {
     private final CollectionManager collectionManager;
 
     public CountLessThanDifficulty(CollectionManager collectionManager) {
@@ -16,24 +18,27 @@ public class CountLessThanDifficulty implements Command{
     @Override
     public Response execute(Request request) {
         String arg = request.getArgument();
+
         if (arg == null || arg.isEmpty()) {
-            return new Response("Ошибка: Введите значение сложности из списка: VERY_EASY, HARD, HOPELESS", false, null);
+            return new Response("server.msg.error_no_difficulty", false, null);
         }
 
         try {
             Difficulty target = Difficulty.valueOf(arg.toUpperCase());
-            //Сравнием порядковые номера в enum
+
             long count = collectionManager.getCollection().values().stream()
                     .filter(lw -> lw.getDifficulty().ordinal() < target.ordinal())
                     .count();
-            return new Response("Количество элементов со сложностью ниже + " + target + ": " + count, true, null);
+
+            return new Response("server.msg.count_diff_success", true, null, target, count);
+
         } catch (IllegalArgumentException e) {
-            return new Response("Ошибка: Такой сложности не существует в списке!", false, null);
+            return new Response("server.msg.error_invalid_difficulty", false, null);
         }
     }
 
     @Override
     public String getDescription() {
-        return "Выводит количество элементов, значение difficulty которых меньше заданного";
+        return "вывести количество элементов, значение difficulty которых меньше заданного";
     }
 }

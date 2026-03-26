@@ -8,8 +8,10 @@ import network.Response;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
-
-public class PrintFieldDescendingMinimalPointCommand  implements Command {
+/**
+ * Команда для вывода всех значений minimalPoint в порядке убывания.
+ */
+public class PrintFieldDescendingMinimalPointCommand implements Command {
     private final CollectionManager collectionManager;
 
     public PrintFieldDescendingMinimalPointCommand(CollectionManager collectionManager) {
@@ -19,19 +21,20 @@ public class PrintFieldDescendingMinimalPointCommand  implements Command {
     @Override
     public Response execute(Request request) {
         String result = collectionManager.getCollection().values().stream()
-                .map(LabWork::getMinimalPoint) // Достаем float
-                .sorted(Comparator.reverseOrder()) // Сортируем
-                .map(String::valueOf) // Превращаем в String (иначе joining не сработает)
-                .collect(Collectors.joining("\n")); // Склеиваемт
+                .map(LabWork::getMinimalPoint)
+                .sorted(Comparator.reverseOrder())
+                .map(String::valueOf) // Превращаем числа в строки
+                .collect(Collectors.joining("\n")); // Склеиваем через перенос строки
+
         if (result.isEmpty()) {
-            return new Response("Коллекция пуста, баллов нет", true, null);
-        } else {
-            return new Response("Список баллов по убыванию:\n" + result, true, null);
+            return new Response("server.msg.empty", true, null);
         }
+
+        return new Response("server.msg.print_desc_success", true, null, result);
     }
 
     @Override
     public String getDescription() {
-        return "Выводит значения поля minimalPoint для всех элементов в порядке убывания";
+        return "вывести значения поля minimalPoint всех элементов в порядке убывания";
     }
 }

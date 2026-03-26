@@ -1,0 +1,37 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 YaBrowser/26.3.0.0 Safari/537.36" version="29.6.6">
+  <diagram name="Страница-1" id="z7y-Xc4j-cKwZUlzjzFO">
+    <mxGraphModel dx="865" dy="495" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="HLJAQFvJeECu-DnRYiM0-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#FFFFFF);" value="" vertex="1">
+          <mxGeometry height="240" width="340" x="190" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="HLJAQFvJeECu-DnRYiM0-2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#CCCCCC);strokeColor=light-dark(#000000,#000000);strokeWidth=2;" value="" vertex="1">
+          <mxGeometry height="30" width="160" x="360" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="HLJAQFvJeECu-DnRYiM0-3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#CCCCCC);strokeColor=light-dark(#000000,#000000);strokeWidth=2;" value="" vertex="1">
+          <mxGeometry height="30" width="160" x="360" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="HLJAQFvJeECu-DnRYiM0-5" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;Имя пользователя&lt;/font&gt;" vertex="1">
+          <mxGeometry height="30" width="130" x="200" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="HLJAQFvJeECu-DnRYiM0-6" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;Пароль&lt;/font&gt;" vertex="1">
+          <mxGeometry height="30" width="130" x="200" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="HLJAQFvJeECu-DnRYiM0-7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#FFFFFF);strokeColor=light-dark(#000000,#000000);strokeWidth=2;" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;Войти&lt;/font&gt;" vertex="1">
+          <mxGeometry height="30" width="150" x="200" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="HLJAQFvJeECu-DnRYiM0-8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#FFFFFF);strokeColor=light-dark(#000000,#000000);strokeWidth=2;" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;Регистрация&lt;/font&gt;" vertex="1">
+          <mxGeometry height="30" width="150" x="365" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="HLJAQFvJeECu-DnRYiM0-9" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;Язык&lt;/font&gt;" vertex="1">
+          <mxGeometry height="30" width="130" x="200" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="HLJAQFvJeECu-DnRYiM0-10" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#FFFFFF);strokeColor=light-dark(#000000,#000000);strokeWidth=2;align=left;" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;Русский&lt;/font&gt;" vertex="1">
+          <mxGeometry height="30" width="150" x="365" y="270" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

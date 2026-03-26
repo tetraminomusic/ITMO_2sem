@@ -9,16 +9,10 @@ import java.util.List;
  */
 public class Response implements Serializable {
     private static final long serialVersionUID = 1L;
-
-    /**
-     * Текстовое сообщение-ответ (Как было раньше с обычным выводом сразу в консоль. Здесь же это будет передаваться в данный объект-ответ)
-     */
     private final String message;
-
-    /**
-     * Флаг успеха (Нужно для корректной обработки ситуации с возникшими ошибками)
-     */
     private final boolean success;
+
+    private final Object[] messageArgs;
 
     private final List<LabWork> collection;
 
@@ -27,10 +21,11 @@ public class Response implements Serializable {
      * @param message сообщение-ответ
      * @param success флаг успешного выполнения команды
      */
-    public Response(String message, boolean success, List<LabWork> collection) {
+    public Response(String message, boolean success, List<LabWork> collection, Object... args) {
         this.message = message;
         this.success = success;
         this.collection = collection;
+        this.messageArgs = args;
     }
 
     /**
@@ -51,5 +46,9 @@ public class Response implements Serializable {
 
     public List<LabWork> getCollection() {
         return collection;
+    }
+
+    public Object[] getMessageArgs() {
+        return messageArgs;
     }
 }

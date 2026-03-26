@@ -47,6 +47,11 @@ public class MainFrame extends JFrame implements LocaleChangeListener {
         //центр
         setLocationRelativeTo(null);
 
+        Timer timer = new Timer(5000, e -> {
+            loadInitialCollection();
+        });
+        timer.start();
+
     }
 
     /**
@@ -108,6 +113,9 @@ public class MainFrame extends JFrame implements LocaleChangeListener {
     }
 
     public void updateTableData(List<LabWork> newData) {
+
+        this.collection = newData;
+
         if (mainPanel != null) {
             mainPanel.updateTableData(newData);
         }

@@ -1,4 +1,4 @@
-import gui.ExecuteScriptCommand;
+import action.executeScriptAction.ExecuteScriptCommand;
 import managers.UDPClient;
 import managers.LabWorkAsker;
 import models.LabWork;

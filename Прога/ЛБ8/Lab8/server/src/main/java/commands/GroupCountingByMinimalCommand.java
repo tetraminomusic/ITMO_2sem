@@ -1,14 +1,17 @@
 package commands;
 
 import managers.CollectionManager;
+import models.LabWork;
 import network.Request;
 import network.Response;
 
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
-public class GroupCountingByMinimalCommand  implements Command {
+/**
+ * Команда для группировки элементов по минимальному баллу.
+ */
+public class GroupCountingByMinimalCommand implements Command {
     private final CollectionManager collectionManager;
 
     public GroupCountingByMinimalCommand(CollectionManager collectionManager) {
@@ -18,20 +21,20 @@ public class GroupCountingByMinimalCommand  implements Command {
     @Override
     public Response execute(Request request) {
         Map<Float, Long> groups = collectionManager.getCollection().values().stream()
-                .collect(Collectors.groupingBy(labWork -> labWork.getMinimalPoint(), Collectors.counting()));
+                .collect(Collectors.groupingBy(LabWork::getMinimalPoint, Collectors.counting()));
 
         if (groups.isEmpty()) {
-            return new Response("Коллекция пуста", true, null);
-        } else {
-            String result = groups.entrySet().stream()
-                    .map(entry -> "Минимальный балл [" + entry.getKey() + "]: " + entry.getValue() + " шт.")
-                    .collect(Collectors.joining("\n"));
-            return new Response(result, true, null);
+            return new Response("server.msg.empty", true, null);
         }
+
+        String result = groups.entrySet().stream()
+                .map(entry -> entry.getKey() + " -> " + entry.getValue())
+                .collect(Collectors.joining("\n"));
+        return new Response("server.msg.group_success", true, null, result);
     }
 
     @Override
     public String getDescription() {
-        return "Группирует элементы коллекции по минимальным баллам и выводит их количество";
+        return "сгруппировать элементы коллекции по минимальному баллу";
     }
 }
