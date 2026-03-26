@@ -1,18 +1,25 @@
 @startuml
-class ExecuteScriptCommand {
-- UDPClient udpClient
-- LabWorkAsker asker
-- List<String> objectCommands
-- {static} Set<String> runningScripts
-+ void execute(String,String,String)
-+ String getDescription()
+class action.RemoveAction {
++ void actionPerformed(ActionEvent)
 }
 
-
-class commands.ExecuteScriptCommand {
-+ Response execute(Request)
-+ String getDescription()
+interface commands.Command {
+~ Response execute(Request)
+~ String getDescription()
 }
+
+class network.Response {
+- {static} long serialVersionUID
+- String message
+- boolean success
+- Object[] messageArgs
+- List<LabWork> collection
++ String getMessage()
++ boolean getSuccess()
++ List<LabWork> getCollection()
++ Object[] getMessageArgs()
+}
+
 
 class models.LabWork {
 - {static} long serialVersionUID
@@ -44,6 +51,54 @@ class models.LabWork {
 }
 
 
+class network.PasswordHasher {
++ {static} String hashPassword(String)
+}
+
+class gui.MainPanel {
+- JTabbedPane tabbedPane
+- JPanel tableTab
+- JLabel filterLabel
+- JTextField filterField
+- JTable labTable
+- LabWorkTableModel tableModel
+- TableRowSorter<LabWorkTableModel> sorter
+- JPanel mapTab
+- void initComponents()
+- void setupTableAppearance()
+- void setColumnWidth(int,int)
++ void updateTableData(List<LabWork>)
++ void onLocaleChange()
+- void applyFilter()
+- void adjustColumnWidths(JTable)
++ JTable getTable()
+}
+
+
+class commands.ShowCommand {
+- CollectionManager collectionManager
++ Response execute(Request)
++ String getDescription()
+}
+
+
+class action.informAction.PrintFieldDescendingAction {
++ void actionPerformed(ActionEvent)
+- void showScrollableInfo(String,String)
+}
+
+class commands.CountLessThanDifficulty {
+- CollectionManager collectionManager
++ Response execute(Request)
++ String getDescription()
+}
+
+
+class commands.ExecuteScriptCommand {
++ Response execute(Request)
++ String getDescription()
+}
+
 class network.Request {
 - {static} long serialVersionUID
 - String commandName
@@ -62,6 +117,114 @@ class network.Request {
 }
 
 
+class commands.PrintFieldDescendingMinimalPointCommand {
+- CollectionManager collectionManager
++ Response execute(Request)
++ String getDescription()
+}
+
+
+class action.askersAction.LabWorkFormDialog {
+- JTextField nameField
+- JTextField xField
+- JTextField yField
+- JTextField minPointField
+- JTextField descField
+- JTextField tunedWorksField
+- JComboBox<Difficulty> difficultyBox
+- JTextField authorNameField
+- JTextField authorBirthdayField
+- JTextField authorHeightField
+- JTextField authorWeightField
+- JTextField authorPassportField
+- JPanel authorDetailsPanel
+- LabWork result
+- ResourceManager i18n
+- void addFormRow(JPanel,GridBagConstraints,int,String,JComponent)
+- void fillData(LabWork)
+- void onSave()
++ LabWork getResult()
+}
+
+
+class commands.HistoryCommand {
+- List<String> history
++ Response execute(Request)
++ String getDescription()
+}
+
+
+class commands.ClearCommand {
+- {static} Logger logger
+- CollectionManager collectionManager
+- DatabaseManager databaseManager
++ Response execute(Request)
++ String getDescription()
+}
+
+
+class managers.DatabaseManager {
+- {static} Logger logger
+- String url
+- String user
+- String password
+- Connection connection
++ void connect()
++ Connection getConnection()
++ void close()
++ boolean authenticate(String,String)
+- boolean registerUser(String,String)
++ boolean deleteLabWork(int,String)
++ int insertLabWork(LabWork,String)
++ boolean updateLabWork(int,LabWork,String)
++ boolean clearUserObjects(String)
+}
+
+
+class network.UDPServer {
+- {static} Logger logger
+- DatagramChannel channel
++ RawPacket receiveRawData()
++ Request receiveRequest()
++ void sendResponse(Response,SocketAddress)
+}
+
+
+class network.UDPServer$RawPacket {
++ byte[] data
++ SocketAddress address
+}
+
+class gui.LoginFrame {
+- UDPClient udpClient
+- JLabel loginLabel
+- JLabel passLabel
+- JLabel langLabel
+- JTextField loginField
+- JPasswordField passwordField
+- JButton loginButton
+- JButton registerButton
++ void onLocaleChange()
+- void handleAuth()
+- void initComponents()
+}
+
+
+class gui.HeaderPanel {
+- String login
+- JLabel userLabel
+- JLabel langLabel
+- JComboBox<Locale> langComboBox
+- JButton logoutButton
++ void onLocaleChange()
+}
+
+
+class network.SerializationUtils {
++ {static} byte[] serialize(Object)
++ {static} Object deserialize(byte[])
+}
+
 class commands.memes.PolyakovCommand {
 - int MAX_ADDITIONS
 - String lexicon(String)
@@ -70,13 +233,83 @@ class commands.memes.PolyakovCommand {
 }
 
 
-class ClientMain {
-- {static} String SERVER_HOST
-- {static} int SERVER_PORT
-- {static} List<String> COMMANDS_WITH_OBJECT
-+ {static} void main(String[])
+class managers.CollectionManager {
+- Map<String,LabWork> collection
+- DatabaseManager databaseManager
+- LocalDateTime lastInitTime
++ Map<String,LabWork> getCollection()
++ String info()
++ boolean isEmpty()
++ void loadFromDatabase()
 }
 
+
+class commands.GroupCountingByMinimalCommand {
+- CollectionManager collectionManager
++ Response execute(Request)
++ String getDescription()
+}
+
+
+class gui.ScriptLogDialog {
+- JTextArea logArea
++ void appendLog(String)
+}
+
+
+class ClientApp {
+- UDPClient udpClient
+- LineReader lineReader
+- LabWorkAsker asker
+- ExecuteScriptCommand scriptExecutor
+- List<String> commandsWithObject
+- String login
+- String password
++ void start()
+- boolean authenticate()
+- void runCommandLoop()
+- void handleExit()
+- void handleExecuteScript(String)
+- void handleUpdate(String,String)
+- void sendStandardCommand(String,String)
+}
+
+
+class action.executeScriptAction.ExecuteScriptAction {
+- ExecuteScriptCommand scriptExecutor
++ void actionPerformed(ActionEvent)
+}
+
+
+class action.FetchTextAction {
+- String commandName
+- String windowTitleKey
++ void actionPerformed(ActionEvent)
+- void showScrollableInfo(String,String)
+- String translateHistoryString(String)
+}
+
+
+class commands.InsertCommand {
+- {static} Logger logger
+- CollectionManager collectionManager
+- DatabaseManager databaseManager
++ Response execute(Request)
++ String getDescription()
+}
+
+
+class commands.RemoveLowerCommand {
+- CollectionManager collectionManager
+- DatabaseManager databaseManager
++ Response execute(Request)
++ String getDescription()
+}
+
+
+class action.CountLessThanDifficultyAction {
++ void actionPerformed(ActionEvent)
+}
 
 enum models.Difficulty {
 +  VERY_EASY
@@ -84,33 +317,148 @@ enum models.Difficulty {
 +  HOPELESS
 }
 
-class commands.UpdateCommand {
+class commands.ReplaceIfGreaterCommand {
 - CollectionManager collectionManager
 - DatabaseManager databaseManager
 + Response execute(Request)
 + String getDescription()
 }
 
+
+class action.askersAction.RemoveLowerAction {
++ void actionPerformed(ActionEvent)
+}
+
+class gui.MainFrame {
+- UDPClient udpClient
+- String login
+- String password
+- HeaderPanel headerPanel
+- CommandPanel commandPanel
+- MainPanel mainPanel
+- List<LabWork> collection
++ void loadInitialCollection()
+- void initComponents()
++ void onLocaleChange()
++ MainPanel getMainPanel()
++ UDPClient getUdpClient()
++ void updateTableData(List<LabWork>)
++ LabWork getLabWorkById(int)
++ String getSelectedId()
+}
+
+
+class action.informAction.HistoryAction {
++ void actionPerformed(ActionEvent)
+- void showScrollableInfo(String,String)
+- String translateHistoryString(String)
+}
 
 class managers.CommandManager {
 - {static} Logger logger
 - Map<String,Command> commands
 - List<String> history
 - DatabaseManager databaseManager
+- CollectionManager collectionManager
 + Response handle(Request)
 - void addToHistory(String)
 }
 
 
-class commands.InfoCommand {
+class managers.UDPClient {
+- DatagramSocket socket
+- InetSocketAddress serverAddress
++ void sendRequest(Request)
++ Response receiveResponse()
++ void close()
+}
+
+
+class action.askersAction.UpdateAction {
++ void actionPerformed(ActionEvent)
+- void openEditForm(String)
+}
+
+class network.RawPacket {
+- byte[] data
+- SocketAddress address
++ byte[] getData()
++ SocketAddress getAddress()
++ void setAddress(SocketAddress)
++ void setData(byte[])
+}
+
+
+class models.Person {
+- {static} long serialVersionUID
+- String name
+- LocalDateTime birthday
+- float height
+- Double weight
+- String passportID
++ String toString()
++ String getName()
++ float getHeight()
++ Double getWeight()
++ String getPassportID()
++ LocalDateTime getBirthday()
+}
+
+
+class action.ClearAction {
++ void actionPerformed(ActionEvent)
+}
+
+class action.executeScriptAction.ExecuteScriptCommand {
+- UDPClient udpClient
+- LabWorkAsker asker
+- List<String> objectCommands
++ void execute(String,String,String,BiConsumer<String,Response>)
+}
+
+
+class action.askersAction.InsertAction {
++ void actionPerformed(ActionEvent)
+}
+
+class commands.memes.GavrilovsayCommand {
+- String Gavrilov_art
++ Response execute(Request)
++ String getDescription()
+}
+
+
+class commands.SaveCommand {
 - CollectionManager collectionManager
 + Response execute(Request)
 + String getDescription()
 }
 
 
-class commands.ShowCommand {
+class ServerMain {
+- {static} Logger logger
+- {static} int PORT
+- {static} ExecutorService processingPool
++ {static} void main(String[])
+}
+
+
+class gui.LabWorkTableModel {
+- List<LabWork> labWorks
+- String[] columnKeys
++ void setLabWorks(List<LabWork>)
++ int getColumnCount()
++ int getRowCount()
++ String getColumnName(int)
++ Object getValueAt(int,int)
++ Class<?> getColumnClass(int)
+}
+
+
+class commands.RemovekeyCommand {
+- {static} Logger logger
 - CollectionManager collectionManager
+- DatabaseManager databaseManager
 + Response execute(Request)
 + String getDescription()
 }
@@ -138,7 +486,20 @@ class managers.LabWorkAsker {
 }
 
 
-class commands.ReplaceIfGreaterCommand {
+abstract class action.AbstractClientAction {
+# MainFrame mainFrame
+# UDPClient udpClient
+# String login
+# String password
+# ResourceManager i18n
+# void executeNetworkTask(Request,boolean)
+# void showError(String)
+# String translateServerMessage(Response)
+}
+
+
+class commands.UpdateCommand {
+- {static} Logger logger
 - CollectionManager collectionManager
 - DatabaseManager databaseManager
 + Response execute(Request)
@@ -146,57 +507,56 @@ class commands.ReplaceIfGreaterCommand {
 }
 
 
-class commands.AuthCommand {
-+ Response execute(Request)
-+ String getDescription()
-}
-
-class ClientApp {
+class gui.CommandPanel {
 - UDPClient udpClient
-- LineReader lineReader
-- LabWorkAsker asker
-- ExecuteScriptCommand scriptExecutor
-- List<String> commandsWithObject
 - String login
 - String password
-+ void start()
-- boolean authenticate()
-- void runCommandLoop()
-- void handleExit()
-- void handleExecuteScript(String)
-- void handleUpdate(String,String)
-- void sendStandardCommand(String,String)
+- MainFrame mainFrame
+- Frame parentFrame
+- JButton btnInsert
+- JButton btnUpdate
+- JButton btnRemove
+- JButton btnClear
+- JButton btnExecuteScript
+- JButton btnRemoveLower
+- JButton btnHistory
+- JButton btnReplaceIfGreater
+- JButton btnGroupByMinimalPoint
+- JButton btnCountLessThanDifficulty
+- JButton btnPrintFieldDescendingMinimalPoint
+- ExecuteScriptCommand scriptExecutor
+- void initComponents()
+- void setupListeners()
++ void onLocaleChange()
+- void styleButton(JButton)
 }
 
 
-class commands.memes.GavrilovsayCommand {
-- String Gavrilov_art
+class action.informAction.GroupByMinimalPointAction {
++ void actionPerformed(ActionEvent)
+- void showScrollableInfo(String,String)
+}
+
+interface i18n.LocaleChangeListener {
+~ void onLocaleChange()
+}
+
+class commands.InfoCommand {
+- CollectionManager collectionManager
 + Response execute(Request)
 + String getDescription()
 }
 
 
-class managers.DatabaseManager {
-- {static} Logger logger
-- String url
-- String user
-- String password
-- Connection connection
-+ void connect()
-+ Connection getConnection()
-+ void close()
-+ boolean authenticate(String,String)
-- boolean registerUser(String,String)
-+ boolean deleteLabWork(int,String)
-+ int insertLabWork(LabWork,String)
-+ boolean updateLabWork(int,LabWork,String)
-+ boolean clearUserObjects(String)
+class commands.HelpCommand {
+- Map<String,Command> commands
++ Response execute(Request)
++ String getDescription()
 }
 
 
-class network.SerializationUtils {
-+ {static} byte[] serialize(Object)
-+ {static} Object deserialize(byte[])
+interface action.ClientAction {
+~ void actionPerformed(ActionEvent)
 }
 
 class models.Coordinates {
@@ -210,184 +570,97 @@ class models.Coordinates {
 }
 
 
-class commands.HelpCommand {
-- Map<String,Command> commands
+class commands.AuthCommand {
 + Response execute(Request)
 + String getDescription()
 }
 
+class action.askersAction.ReplaceIfGreaterAction {
++ void actionPerformed(ActionEvent)
+- void openReplaceForm(String)
+}
 
-class network.Response {
-- {static} long serialVersionUID
-- String message
-- boolean success
-+ String getMessage()
-+ boolean getSuccess()
+class i18n.ResourceManager {
+- {static} ResourceManager instance
+- ResourceBundle bundle
+- Locale currentLocale
+- NumberFormat numberFormat
+- DateTimeFormatter dateTimeFormatter
++ {static} List<Locale> SUPPORTED_LOCALES
+- List<LocaleChangeListener> listeners
++ {static} ResourceManager getInstance()
++ String getString(String)
++ String getFormatted(String,Object)
++ String formatNumber(double)
++ String formatDate(LocalDateTime)
++ Locale getCurrentLocale()
++ void addLocaleChangeListener(LocaleChangeListener)
++ void setLocale(Locale)
 }
 
 
-class commands.InsertCommand {
-- {static} Logger logger
-- CollectionManager collectionManager
-- DatabaseManager databaseManager
-+ Response execute(Request)
-+ String getDescription()
-}
-
-
-class models.Person {
-- {static} long serialVersionUID
-- String name
-- LocalDateTime birthday
-- float height
-- Double weight
-- String passportID
-+ String getName()
-+ float getHeight()
-+ Double getWeight()
-+ String getPassportID()
-+ LocalDateTime getBirthday()
-}
-
-
-class commands.GroupCountingByMinimalCommand {
-- CollectionManager collectionManager
-+ Response execute(Request)
-+ String getDescription()
-}
-
-
-class managers.UDPClient {
-- DatagramSocket socket
-- InetSocketAddress serverAddress
-+ void sendRequest(Request)
-+ Response receiveResponse()
-+ void close()
-}
-
-
-class commands.CountLessThanDifficulty {
-- CollectionManager collectionManager
-+ Response execute(Request)
-+ String getDescription()
-}
-
-
-class commands.PrintFieldDescendingMinimalPointCommand {
-- CollectionManager collectionManager
-+ Response execute(Request)
-+ String getDescription()
-}
-
-
-class commands.RemovekeyCommand {
-- CollectionManager collectionManager
-- DatabaseManager databaseManager
-+ Response execute(Request)
-+ String getDescription()
-}
-
-
-class network.PasswordHasher {
-+ {static} String hashPassword(String)
-}
-
-class commands.ClearCommand {
-- CollectionManager collectionManager
-- DatabaseManager databaseManager
-+ Response execute(Request)
-+ String getDescription()
-}
-
-
-class commands.RemoveLowerCommand {
-- CollectionManager collectionManager
-- DatabaseManager databaseManager
-+ Response execute(Request)
-+ String getDescription()
-}
-
-
-class ServerMain {
-- {static} Logger logger
-- {static} int PORT
-- {static} ExecutorService processingPool
+class ClientMain {
+- {static} String SERVER_HOST
+- {static} int SERVER_PORT
+- {static} List<String> COMMANDS_WITH_OBJECT
 + {static} void main(String[])
-}
-
-
-class managers.CollectionManager {
-- Map<String,LabWork> collection
-- DatabaseManager databaseManager
-- LocalDateTime lastInitTime
-+ Map<String,LabWork> getCollection()
-+ String info()
-+ boolean isEmpty()
-+ void loadFromDatabase()
-}
-
-
-interface commands.Command {
-~ Response execute(Request)
-~ String getDescription()
-}
-
-class network.RawPacket {
-- byte[] data
-- SocketAddress address
-+ byte[] getData()
-+ SocketAddress getAddress()
-+ void setAddress(SocketAddress)
-+ void setData(byte[])
-}
-
-
-class network.UDPServer {
-- {static} Logger logger
-- DatagramChannel channel
-+ Request receiveRequest()
-+ void sendResponse(Response,SocketAddress)
-}
-
-
-class commands.SaveCommand {
-- CollectionManager collectionManager
-+ Response execute(Request)
-+ String getDescription()
-}
-
-
-class commands.HistoryCommand {
-- List<String> history
-+ Response execute(Request)
-+ String getDescription()
++ {static} void setUIFont(javax.swing.plaf.FontUIResource)
 }
 
 
 
 
-commands.Command <|.. commands.ExecuteScriptCommand
+action.AbstractClientAction <|-- action.RemoveAction
+java.io.Serializable <|.. network.Response
 models.Comparable <|.. models.LabWork
 java.io.Serializable <|.. models.LabWork
-java.io.Serializable <|.. network.Request
-commands.Command <|.. commands.memes.PolyakovCommand
-commands.Command <|.. commands.UpdateCommand
-commands.Command <|.. commands.InfoCommand
+i18n.LocaleChangeListener <|.. gui.MainPanel
+gui.JPanel <|-- gui.MainPanel
 commands.Command <|.. commands.ShowCommand
-commands.Command <|.. commands.ReplaceIfGreaterCommand
-commands.Command <|.. commands.AuthCommand
-commands.Command <|.. commands.memes.GavrilovsayCommand
-java.io.Serializable <|.. models.Coordinates
-commands.Command <|.. commands.HelpCommand
-java.io.Serializable <|.. network.Response
-commands.Command <|.. commands.InsertCommand
-java.io.Serializable <|.. models.Person
-commands.Command <|.. commands.GroupCountingByMinimalCommand
+action.AbstractClientAction <|-- action.informAction.PrintFieldDescendingAction
 commands.Command <|.. commands.CountLessThanDifficulty
+commands.Command <|.. commands.ExecuteScriptCommand
+java.io.Serializable <|.. network.Request
 commands.Command <|.. commands.PrintFieldDescendingMinimalPointCommand
-commands.Command <|.. commands.RemovekeyCommand
-commands.Command <|.. commands.ClearCommand
-commands.Command <|.. commands.RemoveLowerCommand
-commands.Command <|.. commands.SaveCommand
+action.askersAction.JDialog <|-- action.askersAction.LabWorkFormDialog
 commands.Command <|.. commands.HistoryCommand
+commands.Command <|.. commands.ClearCommand
+network.UDPServer +.. network.UDPServer$RawPacket
+i18n.LocaleChangeListener <|.. gui.LoginFrame
+gui.JFrame <|-- gui.LoginFrame
+i18n.LocaleChangeListener <|.. gui.HeaderPanel
+gui.JPanel <|-- gui.HeaderPanel
+commands.Command <|.. commands.memes.PolyakovCommand
+commands.Command <|.. commands.GroupCountingByMinimalCommand
+gui.JDialog <|-- gui.ScriptLogDialog
+action.AbstractClientAction <|-- action.executeScriptAction.ExecuteScriptAction
+action.AbstractClientAction <|-- action.FetchTextAction
+commands.Command <|.. commands.InsertCommand
+commands.Command <|.. commands.RemoveLowerCommand
+action.AbstractClientAction <|-- action.CountLessThanDifficultyAction
+commands.Command <|.. commands.ReplaceIfGreaterCommand
+action.AbstractClientAction <|-- action.askersAction.RemoveLowerAction
+i18n.LocaleChangeListener <|.. gui.MainFrame
+gui.JFrame <|-- gui.MainFrame
+action.AbstractClientAction <|-- action.informAction.HistoryAction
+action.AbstractClientAction <|-- action.askersAction.UpdateAction
+java.io.Serializable <|.. models.Person
+action.AbstractClientAction <|-- action.ClearAction
+action.AbstractClientAction <|-- action.askersAction.InsertAction
+commands.Command <|.. commands.memes.GavrilovsayCommand
+commands.Command <|.. commands.SaveCommand
+javax.swing.table.AbstractTableModel <|-- gui.LabWorkTableModel
+commands.Command <|.. commands.RemovekeyCommand
+action.ClientAction <|.. action.AbstractClientAction
+commands.Command <|.. commands.UpdateCommand
+i18n.LocaleChangeListener <|.. gui.CommandPanel
+gui.JPanel <|-- gui.CommandPanel
+action.AbstractClientAction <|-- action.informAction.GroupByMinimalPointAction
+commands.Command <|.. commands.InfoCommand
+commands.Command <|.. commands.HelpCommand
+java.awt.event.ActionListener <|-- action.ClientAction
+java.io.Serializable <|.. models.Coordinates
+models.Comparable <|.. models.Coordinates
+commands.Command <|.. commands.AuthCommand
+action.AbstractClientAction <|-- action.askersAction.ReplaceIfGreaterAction
 @enduml
