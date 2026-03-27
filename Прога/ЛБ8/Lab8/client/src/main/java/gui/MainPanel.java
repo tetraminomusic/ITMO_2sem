@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainPanel extends JPanel implements LocaleChangeListener {
+    //таблица
     private JTabbedPane tabbedPane;
     private JPanel tableTab;
     private JLabel filterLabel;
@@ -20,11 +21,17 @@ public class MainPanel extends JPanel implements LocaleChangeListener {
     private JTable labTable;
     private LabWorkTableModel tableModel;
     private TableRowSorter<LabWorkTableModel> sorter;
-    private JPanel mapTab;
 
-    public MainPanel() {
+    //карта
+    private MapPanel mapPanel;
+    private MainFrame mainFrame;
+
+    public MainPanel(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
         setLayout(new BorderLayout());
+
         initComponents();
+
         ResourceManager.getInstance().addLocaleChangeListener(this);
         onLocaleChange();
     }
@@ -64,12 +71,13 @@ public class MainPanel extends JPanel implements LocaleChangeListener {
         });
 
         // --- Вкладка Карты ---
-        mapTab = new JPanel();
-        mapTab.setBackground(new Color(240,240,240));
-        mapTab.add(new JLabel("Здесь будет карта"));
+        mapPanel = new MapPanel(mainFrame);
 
-        tabbedPane.addTab("", tableTab);
-        tabbedPane.addTab("", mapTab);
+
+        // добавляем вкладки
+        tabbedPane.add("", tableTab);
+        tabbedPane.add("", mapPanel);
+
         add(tabbedPane, BorderLayout.CENTER);
     }
 
@@ -111,6 +119,10 @@ public class MainPanel extends JPanel implements LocaleChangeListener {
 
     public void updateTableData(List<LabWork> newData) {
         tableModel.setLabWorks(newData);
+
+        if (mapPanel != null) {
+            mapPanel.updateData(newData);
+        }
         // После обновления данных подгоняем ширину
         SwingUtilities.invokeLater(() -> adjustColumnWidths(labTable));
     }
@@ -121,12 +133,12 @@ public class MainPanel extends JPanel implements LocaleChangeListener {
 
         tabbedPane.setTitleAt(0, i18n.getString("main.tab.table"));
         tabbedPane.setTitleAt(1, i18n.getString("main.tab.map"));
+
+
         filterLabel.setText(i18n.getString("main.label.filter") + ": ");
 
         if (tableModel != null) {
             tableModel.fireTableStructureChanged();
-            // ВАЖНО: после fireTableStructureChanged настройки колонок слетают,
-            // поэтому восстанавливаем их:
             setupTableAppearance();
         }
     }

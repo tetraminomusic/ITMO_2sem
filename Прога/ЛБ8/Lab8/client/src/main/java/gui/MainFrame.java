@@ -95,7 +95,7 @@ public class MainFrame extends JFrame implements LocaleChangeListener {
         commandPanel = new CommandPanel(udpClient, login, password, this);
         add(commandPanel, BorderLayout.WEST);
 
-        mainPanel = new MainPanel();
+        mainPanel = new MainPanel(this);
         add(mainPanel, BorderLayout.CENTER);
     }
 
