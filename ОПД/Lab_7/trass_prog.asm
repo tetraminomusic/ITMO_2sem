@@ -1,0 +1,14 @@
+ORG 0x20
+First: WORD 0x1488
+Second: WORD 0x0228
+acCum: WORD 0x0078
+
+START:
+
+LD Second
+PUSH
+LD First
+PUSH
+LD acCum
+WORD 0x0F30
+HLT
