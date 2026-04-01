@@ -39,7 +39,7 @@ public class CommandManager {
      * Заметь: здесь больше нет asker и reader, так как ввод на клиенте.
      */
     public CommandManager(CollectionManager collection, DatabaseManager databaseManager) {
-        collectionManager = collection;
+        this.collectionManager = collection;
         this.databaseManager = databaseManager;
 
         // Регистрация команд (Классы команд тоже нужно будет обновить под Response)
@@ -86,7 +86,7 @@ public class CommandManager {
         // 1. Проверка авторизации
         if (!databaseManager.authenticate(login, password)) {
             logger.warn("Отказ в доступе для пользователя: {}", login);
-            return new Response("Ошибка авторизации: неверный логин или пароль.", false, null);
+            return new Response("server.msg.auth_failed", false, null);
         }
 
         Command command = commands.get(commandName);

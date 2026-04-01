@@ -25,7 +25,7 @@ public class CommandPanel extends JPanel implements LocaleChangeListener {
     private final MainFrame mainFrame;
     private final Frame parentFrame;
 
-    // --- Кнопки управления ---
+    //Кнопки управления
     private JButton btnInsert;
     private JButton btnUpdate;
     private JButton btnRemove;
@@ -64,13 +64,13 @@ public class CommandPanel extends JPanel implements LocaleChangeListener {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        // 1. Создаем кнопки и расставляем их на панели
+        //Создаем кнопки и расставляем их на панели
         initComponents();
 
-        // 2. Привязываем логику (классы Action) к кнопкам
+        //Привязываем логику (классы Action) к кнопкам
         setupListeners();
 
-        // 3. Подписываемся на смену языка и переводим тексты в первый раз
+        //Подписываемся на смену языка и переводим тексты в первый раз
         ResourceManager.getInstance().addLocaleChangeListener(this);
         onLocaleChange();
     }

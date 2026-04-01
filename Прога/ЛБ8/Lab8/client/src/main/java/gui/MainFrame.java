@@ -12,11 +12,16 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Класс, который хранит в себе все контейнеры компонентов главного окна приложения
+ * Через него происходит поллинг с сервером, получение актуальных данных касательно лаб и обновления данных о лаб
+ */
 public class MainFrame extends JFrame implements LocaleChangeListener {
     private final UDPClient udpClient;
     private final String login;
     private final String password;
 
+    //храним контейнеры
     private HeaderPanel headerPanel;
     private CommandPanel commandPanel;
     private MainPanel mainPanel;
@@ -47,6 +52,7 @@ public class MainFrame extends JFrame implements LocaleChangeListener {
         //центр
         setLocationRelativeTo(null);
 
+        //Polling
         Timer timer = new Timer(5000, e -> {
             loadInitialCollection();
         });
@@ -76,7 +82,10 @@ public class MainFrame extends JFrame implements LocaleChangeListener {
             @Override
             protected void done() {
                 try {
+                    //получаем ответ от сервера
                     collection = get();
+
+                    //обновляем таблицу в контейнере main
                     mainPanel.updateTableData(collection);
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(MainFrame.this,
@@ -99,13 +108,12 @@ public class MainFrame extends JFrame implements LocaleChangeListener {
         add(mainPanel, BorderLayout.CENTER);
     }
 
+    /**
+     * Метод, который вызывает в РесурсМанагере для смены языка
+     */
     @Override
     public void onLocaleChange() {
         setTitle(ResourceManager.getInstance().getString("app.title"));
-    }
-
-    public MainPanel getMainPanel() {
-        return mainPanel;
     }
 
     public UDPClient getUdpClient() {
@@ -130,6 +138,9 @@ public class MainFrame extends JFrame implements LocaleChangeListener {
                 .orElse(null);
     }
 
+    /**
+     * Метод, который позволяет получить текущий ID выбранного элемента
+     */
     public String getSelectedId() {
         //Проверяем, создана ли вообще панель с таблицей
         if (mainPanel == null || mainPanel.getTable() == null) {

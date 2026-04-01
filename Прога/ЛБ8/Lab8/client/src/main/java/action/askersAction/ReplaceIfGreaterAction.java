@@ -23,7 +23,7 @@ public class ReplaceIfGreaterAction extends AbstractClientAction {
             return;
         }
 
-        // ШАГ 1: Проверка прав на сервере
+        //Проверка прав на сервере
         new SwingWorker<Response, Void>() {
             @Override
             protected Response doInBackground() throws Exception {
@@ -38,7 +38,7 @@ public class ReplaceIfGreaterAction extends AbstractClientAction {
                 try {
                     Response resp = get();
                     if (resp.getSuccess()) {
-                        // ШАГ 2: Права есть, открываем форму для нового объекта
+                        //Права есть, открываем форму для нового объекта
                         openReplaceForm(idString);
                     } else {
                         showError(translateServerMessage(resp));
@@ -56,7 +56,7 @@ public class ReplaceIfGreaterAction extends AbstractClientAction {
 
         LabWork newLab = dialog.getResult();
         if (newLab != null) {
-            // ШАГ 3: Финальная отправка на замену
+            //Финальная отправка на замену
             executeNetworkTask(new Request("replace_if_greater", idString, newLab, login, password), true);
         }
     }

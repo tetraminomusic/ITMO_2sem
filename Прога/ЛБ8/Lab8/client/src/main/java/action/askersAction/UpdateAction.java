@@ -24,13 +24,13 @@ public class UpdateAction extends AbstractClientAction {
     public void actionPerformed(ActionEvent e) {
         String idString = mainFrame.getSelectedId();
 
-        // 1. Проверяем, выбрана ли строка
+        //Проверяем, выбрана ли строка
         if (idString == null) {
             showError(i18n.getString("dialog.error.string.choose.table"));
             return;
         }
 
-        // 2. ПЕРВЫЙ ЭТАП: Запрос к серверу на проверку прав (Dry Run)
+        //Запрос к серверу на проверку прав (Dry Run)
         new SwingWorker<Response, Void>() {
             @Override
             protected Response doInBackground() throws Exception {
@@ -45,10 +45,10 @@ public class UpdateAction extends AbstractClientAction {
                 try {
                     Response response = get();
                     if (response.getSuccess()) {
-                        // СЕРВЕР ПОДТВЕРДИЛ ПРАВА: открываем форму
+                        //открываем форму
                         openEditForm(idString);
                     } else {
-                        // СЕРВЕР ОТКАЗАЛ: переводим ключ ошибки (напр. "access_denied") и показываем
+                        //переводим ключ ошибки (напр. "access_denied") и показываем
                         showError(translateServerMessage(response));
                     }
                 } catch (Exception ex) {
@@ -59,7 +59,7 @@ public class UpdateAction extends AbstractClientAction {
     }
 
     /**
-     * ВТОРОЙ ЭТАП: Открытие формы и финальная отправка данных.
+     * Открытие формы и финальная отправка данных.
      */
     private void openEditForm(String idString) {
         try {
@@ -79,7 +79,7 @@ public class UpdateAction extends AbstractClientAction {
             LabWork updatedLab = dialog.getResult();
 
             if (updatedLab != null) {
-                // ФИНАЛЬНЫЙ ЗАПРОС: шлем объект на сервер для записи в БД
+                //шлем объект на сервер для записи в БД
                 executeNetworkTask(new Request("update", idString, updatedLab, login, password), true);
             }
         } catch (NumberFormatException ex) {

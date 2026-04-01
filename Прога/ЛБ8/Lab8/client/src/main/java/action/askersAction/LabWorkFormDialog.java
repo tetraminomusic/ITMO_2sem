@@ -38,11 +38,11 @@ public class LabWorkFormDialog extends JDialog {
     public LabWorkFormDialog(Frame parent, String title, LabWork initialData) {
         super(parent, title, true);
 
-        // 1. Главный контейнер с отступами
+        //Главный контейнер с отступами
         JPanel contentPane = new JPanel(new BorderLayout(10, 10));
         contentPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // 2. Панель формы
+        //Панель формы
         JPanel formPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 10, 5, 10); // Отступы между ячейками
@@ -71,7 +71,6 @@ public class LabWorkFormDialog extends JDialog {
         // Автор (триггер)
         addFormRow(formPanel, gbc, row++, i18n.getString("form.label.author.name"), authorNameField);
 
-        // 3. СКРЫТАЯ ПАНЕЛЬ АВТОРА
         authorDetailsPanel = new JPanel(new GridBagLayout());
         GridBagConstraints authGbc = new GridBagConstraints();
         authGbc.fill = GridBagConstraints.HORIZONTAL;
@@ -103,7 +102,7 @@ public class LabWorkFormDialog extends JDialog {
             public void changedUpdate(DocumentEvent e) { update(); }
         });
 
-        // 4. Кнопки
+        //Кнопки
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton saveBtn = new JButton(i18n.getString("form.btn.save"));
         JButton cancelBtn = new JButton(i18n.getString("btn.cancel"));
@@ -162,31 +161,88 @@ public class LabWorkFormDialog extends JDialog {
             String name = nameField.getText().trim();
             if (name.isEmpty()) throw new Exception(i18n.getString("err.validation.empty"));
 
-            long x = Long.parseLong(xField.getText().trim());
-            if (x > 162) throw new Exception(i18n.getString("err.validation.invalidX"));
-
-            long y = Long.parseLong(yField.getText().trim());
-
-            float minPoint = Float.parseFloat(minPointField.getText().trim());
-            if (minPoint <= 0) throw new Exception(i18n.getString("err,validation.invalidPoint"));
-
-            Person author = null;
-            if (!authorNameField.getText().trim().isEmpty()) {
-                LocalDateTime bday = LocalDate.parse(authorBirthdayField.getText().trim(),
-                        DateTimeFormatter.ofPattern("dd.MM.yyyy")).atStartOfDay();
-                author = new Person(authorNameField.getText().trim(), bday,
-                        Float.parseFloat(authorHeightField.getText().trim()),
-                        authorWeightField.getText().trim().isEmpty() ? null : Double.parseDouble(authorWeightField.getText().trim()),
-                        authorPassportField.getText().trim());
+            long x;
+            try {
+                x = Long.parseLong(xField.getText().trim());
+                if (x > 162) throw new Exception();
+            } catch (Exception e) {
+                throw new IllegalArgumentException(i18n.getString("err.validation.invalidX"));
             }
 
-            result = new LabWork(0, name, new Coordinates(x, y), LocalDateTime.now(),
-                    minPoint, descField.getText(),
-                    tunedWorksField.getText().isEmpty() ? null : Integer.parseInt(tunedWorksField.getText()),
+            long y;
+
+            try {
+                y = Long.parseLong(yField.getText().trim());
+            } catch (Exception e) {
+                throw new IllegalArgumentException(i18n.getString("err.validation.invalidY"));
+            }
+
+
+            float minPoint;
+            try {
+                minPoint = Float.parseFloat(minPointField.getText().trim());
+                if (minPoint <= 0) throw new Exception();
+            } catch (Exception e) {
+                throw new IllegalArgumentException(i18n.getString("err.validation.invalidPoint"));
+            }
+
+            Integer tuned = null;
+            if (!tunedWorksField.getText().trim().isEmpty()) {
+                try {
+                    tuned = Integer.parseInt(tunedWorksField.getText().trim());
+                } catch (Exception e) {
+                    throw new IllegalArgumentException(i18n.getString("err.validation.invalidTuned"));
+                }
+            }
+
+
+            Person author = null;
+            String authorName = authorNameField.getText().trim();
+            if (!authorName.isEmpty()) {
+                // Дата рождения
+                LocalDateTime bday;
+                try {
+                    bday = LocalDate.parse(authorBirthdayField.getText().trim(),
+                            DateTimeFormatter.ofPattern("dd.MM.yyyy")).atStartOfDay();
+                } catch (Exception e) {
+                    throw new IllegalArgumentException(i18n.getString("err.validation.invalidDate"));
+                }
+
+                // Рост
+                float height;
+                try {
+                    height = Float.parseFloat(authorHeightField.getText().trim());
+                    if (height <= 0) throw new Exception();
+                } catch (Exception e) {
+                    throw new IllegalArgumentException(i18n.getString("err.validation.invalidHeight"));
+                }
+
+                // Вес
+                Double weight = null;
+                if (!authorWeightField.getText().trim().isEmpty()) {
+                    try {
+                        weight = Double.parseDouble(authorWeightField.getText().trim());
+                        if (weight <= 0) throw new Exception();
+                    } catch (Exception e) {
+                        throw new IllegalArgumentException(i18n.getString("err.validation.invalidWeight"));
+                    }
+                }
+
+                String passport = authorPassportField.getText().trim();
+                if (passport.length() > 50) throw new IllegalArgumentException(i18n.getString("err.validation.invalidPassport"));
+
+                author = new Person(authorName, bday, height, weight, passport);
+            }
+
+            this.result = new LabWork(0, name, new Coordinates(x, y), LocalDateTime.now(),
+                    minPoint, descField.getText().trim(), tuned,
                     (Difficulty) difficultyBox.getSelectedItem(), author);
             dispose();
+
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), i18n.getString("error.title"), JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, i18n.getString("error.title") + ": " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

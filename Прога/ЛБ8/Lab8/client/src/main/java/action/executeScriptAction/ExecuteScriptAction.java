@@ -2,13 +2,11 @@ package action.executeScriptAction;
 
 import action.AbstractClientAction;
 import gui.MainFrame;
-import gui.ScriptLogDialog;
 import managers.UDPClient;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.util.List;
 
 public class ExecuteScriptAction extends AbstractClientAction {
     private final ExecuteScriptCommand scriptExecutor;
@@ -21,6 +19,8 @@ public class ExecuteScriptAction extends AbstractClientAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+
+        //открытие системного проводника
         JFileChooser fileChooser = new JFileChooser(new File("."));
         fileChooser.setDialogTitle(i18n.getString("cmd.execute_script"));
 
@@ -33,7 +33,9 @@ public class ExecuteScriptAction extends AbstractClientAction {
         fileChooser.setAcceptAllFileFilterUsed(false);
 
         if (fileChooser.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
+            //достаём файл
             File file = fileChooser.getSelectedFile();
+            //создаём окно для скрипта
             ScriptLogDialog logDialog = new ScriptLogDialog(mainFrame);
             logDialog.setTitle(i18n.getString("window.script.title"));
             logDialog.setVisible(true);
@@ -61,6 +63,7 @@ public class ExecuteScriptAction extends AbstractClientAction {
                             // Если это не ключ, а готовый текст (например, info), оставляем как есть
                             if (resultText.startsWith("!")) resultText = resp.getMessage();
 
+                            // процесс отправляет переведённую строку в process
                             publish(i18n.getFormatted("script.log.result", resultText));
                         }
                     });
@@ -71,6 +74,7 @@ public class ExecuteScriptAction extends AbstractClientAction {
 
                 @Override
                 protected void process(java.util.List<String> chunks) {
+                    //дописывает новые строки в окно
                     for (String msg : chunks) logDialog.appendLog(msg);
                 }
 

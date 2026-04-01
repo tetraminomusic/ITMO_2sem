@@ -1,16 +1,9 @@
 import gui.LoginFrame;
 import i18n.ResourceManager;
 import managers.UDPClient;
-import managers.LabWorkAsker;
-import org.jline.reader.LineReader;
-import org.jline.reader.LineReaderBuilder;
-import org.jline.reader.impl.completer.StringsCompleter;
-import org.jline.terminal.Terminal;
-import org.jline.terminal.TerminalBuilder;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Arrays;

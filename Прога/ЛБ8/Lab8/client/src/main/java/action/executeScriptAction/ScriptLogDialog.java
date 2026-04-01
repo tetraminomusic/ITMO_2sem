@@ -1,8 +1,11 @@
-package gui;
+package action.executeScriptAction;
 
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Создаёт окно, в котором будет выводиться информация о выполнении скрипта.
+ */
 public class ScriptLogDialog extends JDialog {
     private final JTextArea logArea;
 

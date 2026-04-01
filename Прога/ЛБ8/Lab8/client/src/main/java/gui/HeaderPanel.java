@@ -2,14 +2,12 @@ package gui;
 
 import i18n.LocaleChangeListener;
 import i18n.ResourceManager;
-import gui.LoginFrame; // Для кнопки выхода
-import managers.UDPClient; // Для кнопки выхода
 import javax.swing.*;
 import java.awt.*;
 import java.util.Locale;
 
 /**
- * Верхняя панель (шапка) приложения.
+ * Верхняя панель приложения.
  * Отображает текущего пользователя слева, а настройки языка и выход — справа.
  */
 public class HeaderPanel extends JPanel implements LocaleChangeListener {
@@ -22,14 +20,11 @@ public class HeaderPanel extends JPanel implements LocaleChangeListener {
     public HeaderPanel(String login, MainFrame mainFrame) {
         this.login = login;
 
-        // 1. ИСПОЛЬЗУЕМ BorderLayout для разделения левой и правой части
         setLayout(new BorderLayout());
 
-        // Добавим небольшие отступы по краям панели, чтобы текст не прилипал к окну
         setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
         userLabel = new JLabel();
-
 
         add(userLabel, BorderLayout.WEST);
 
@@ -38,10 +33,10 @@ public class HeaderPanel extends JPanel implements LocaleChangeListener {
         langLabel = new JLabel();
         rightPanel.add(langLabel);
 
-        // Настройка выпадающего списка языков
         langComboBox = new JComboBox<>(ResourceManager.SUPPORTED_LOCALES.toArray(new Locale[0]));
         langComboBox.setSelectedItem(ResourceManager.getInstance().getCurrentLocale());
 
+        //та же хрень, что и в логике с апперкейсом
         langComboBox.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -69,12 +64,11 @@ public class HeaderPanel extends JPanel implements LocaleChangeListener {
             // Открываем окно логина заново
             SwingUtilities.invokeLater(() -> new LoginFrame(mainFrame.getUdpClient()).setVisible(true));
         });
+
         rightPanel.add(logoutButton);
 
-        // Добавляем правую панель на Восток (справа)
         add(rightPanel, BorderLayout.EAST);
 
-        // Подписываемся на смену языка и переводим тексты
         ResourceManager.getInstance().addLocaleChangeListener(this);
         onLocaleChange();
     }

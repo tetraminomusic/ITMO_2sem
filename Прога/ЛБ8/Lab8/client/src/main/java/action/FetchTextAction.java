@@ -9,6 +9,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
+/**
+ * @deprecated
+ */
 public class FetchTextAction extends AbstractClientAction {
     private final String commandName;
     private final String windowTitleKey;

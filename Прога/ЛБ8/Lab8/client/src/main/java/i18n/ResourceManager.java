@@ -4,12 +4,12 @@ import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.*;
 
 /**
- * Менеджер локализации, реализованный как Синглтон.
- * Отвечает за предоставление переведённых строк и форматированных данных (то есть чисел или дат)
+ * Менеджер локализации, реализованный как Синглтон и Observer.
+ * Отвечает за загрузку текстовых ресурсов из properties-файлов, обеспечивает форматирование данных при помощи соответствующих методов
+ * В конструкторе компонентов есть как раз метод addLocalChangeListener, который как бы подписывает фрейм на смену языка
  */
 public class ResourceManager {
     //единственный экземпляр класса
@@ -47,7 +47,6 @@ public class ResourceManager {
     }
 
     private ResourceManager() {
-        // По умолчанию ставим русский
         setLocale(new Locale("ru", "RU"));
     }
 
@@ -100,7 +99,7 @@ public class ResourceManager {
     }
 
     /**
-     * Устанавливает новую локаль и УВЕДОМЛЯЕТ всех слушателей.
+     * Устанавливает новую локаль и уведомляет всех слушателей.
      */
     public void setLocale(Locale locale) {
         this.currentLocale = locale;
@@ -108,7 +107,6 @@ public class ResourceManager {
         this.numberFormat = NumberFormat.getInstance(locale);
         this.dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss").withLocale(locale);
 
-        // ВАЖНО: Оповещаем всех
         for (LocaleChangeListener listener : listeners) {
             listener.onLocaleChange();
         }

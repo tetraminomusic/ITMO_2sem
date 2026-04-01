@@ -17,6 +17,7 @@ import java.util.Locale;
 public class LoginFrame extends JFrame implements LocaleChangeListener {
     private final UDPClient udpClient;
 
+    //все графические элементы приложения
     private JLabel loginLabel;
     private JLabel passLabel;
     private JLabel langLabel;
@@ -25,24 +26,34 @@ public class LoginFrame extends JFrame implements LocaleChangeListener {
     private JButton loginButton;
     private JButton registerButton;
 
+    /**
+     * Конструктор класса
+     * Отвечает за настройку JFrame, инициализации компонентов через метод initComponents(), подписывается на локализации РесурсМанагера.
+     */
     public LoginFrame(UDPClient udpClient) {
         this.udpClient = udpClient;
 
+        //настройка окна приложения
         setTitle(ResourceManager.getInstance().getString("auth.title"));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
 
+        //инициализация объектов
         initComponents();
 
-
-
+        //подписка на локализацию и первичный вызов установки локализации
         ResourceManager.getInstance().addLocaleChangeListener(this);
         onLocaleChange();
 
+        //центрирование и сжатие окна по содержимому
         pack();
         setLocationRelativeTo(null);
     }
 
+    /**
+     * Метод, который вызывается при глобальной смене языка
+     * По сути просто меняет везде текст и упаковывает фрейм по новой
+     */
     @Override
     public void onLocaleChange() {
         ResourceManager i18n = ResourceManager.getInstance();
@@ -57,12 +68,18 @@ public class LoginFrame extends JFrame implements LocaleChangeListener {
         pack(); // Окно пересчитывает размер при смене языка
     }
 
+
+    /**
+     * Отвечает за отправку запроса серверу об аутентификации
+     */
     private void handleAuth() {
         ResourceManager i18n = ResourceManager.getInstance();
 
+        //получаем данные, которые ввёл пользователь
         String login = loginField.getText().trim();
         String pass = new String(passwordField.getPassword()).trim();
 
+        //валидация
         if (login.isEmpty() || pass.isEmpty()) {
             JOptionPane.showMessageDialog(this,
                     i18n.getString("auth.error.empty"),
@@ -71,9 +88,11 @@ public class LoginFrame extends JFrame implements LocaleChangeListener {
             return;
         }
 
+        //Асинхронно отправляем запрос серверу на логин
         SwingWorker<Response, Void> worker = new SwingWorker<>() {
             @Override
             protected Response doInBackground() throws Exception {
+                //этот метод выполняется фоново без блокирования гуи
                 Request authRequest = new Request("auth", "", null, login, pass);
                 udpClient.sendRequest(authRequest);
                 return udpClient.receiveResponse();
@@ -81,15 +100,17 @@ public class LoginFrame extends JFrame implements LocaleChangeListener {
 
             @Override
             protected void done() {
+                //этот метод выполняется в главном потоке гуи
                 try {
+                    //получаем результат от doInBackGround
                     Response response = get();
                     if (response.getSuccess()) {
-                        dispose();
+                        dispose(); //уничтожает текущее окно
                         MainFrame mainFrame = new MainFrame(udpClient, login, pass);
-                        mainFrame.setVisible(true);
+                        mainFrame.setVisible(true); //открывает основное окно
                     } else {
                         JOptionPane.showMessageDialog(LoginFrame.this,
-                                response.getMessage(),
+                                i18n.getString(response.getMessage()),
                                 i18n.getString("error.title"),
                                 JOptionPane.ERROR_MESSAGE);
                     }
@@ -104,6 +125,9 @@ public class LoginFrame extends JFrame implements LocaleChangeListener {
         worker.execute();
     }
 
+    /**
+     * Метод, инициализирующий текущий фрейм
+     */
     private void initComponents() {
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -112,7 +136,7 @@ public class LoginFrame extends JFrame implements LocaleChangeListener {
         gbc.insets = new Insets(15, 15, 15, 15);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // --- ЛОГИН ---
+        //логин (текст + поле ввода)
         gbc.gridx = 0; gbc.gridy = 0;
         loginLabel = new JLabel();
         add(loginLabel, gbc);
@@ -121,7 +145,7 @@ public class LoginFrame extends JFrame implements LocaleChangeListener {
         loginField = new JTextField(20);
         add(loginField, gbc);
 
-        // --- ПАРОЛЬ ---
+        //пароль the same
         gbc.gridx = 0; gbc.gridy = 1;
         passLabel = new JLabel();
         add(passLabel, gbc);
@@ -130,8 +154,8 @@ public class LoginFrame extends JFrame implements LocaleChangeListener {
         passwordField = new JPasswordField(20);
         add(passwordField, gbc);
 
-        // --- КНОПКИ ---
-        Dimension btnSize = new Dimension(160, 50); // Делаем кнопки побольше
+        //кнопки
+        Dimension btnSize = new Dimension(160, 50);
 
         gbc.gridx = 0; gbc.gridy = 2;
         loginButton = new JButton();
@@ -143,7 +167,7 @@ public class LoginFrame extends JFrame implements LocaleChangeListener {
         registerButton.setPreferredSize(btnSize);
         add(registerButton, gbc);
 
-        // --- ЯЗЫК ---
+        //язык
         gbc.gridx = 0; gbc.gridy = 3;
         langLabel = new JLabel();
         add(langLabel, gbc);
@@ -152,8 +176,10 @@ public class LoginFrame extends JFrame implements LocaleChangeListener {
         JComboBox<Locale> langCombo = new JComboBox<>(ResourceManager.SUPPORTED_LOCALES.toArray(new Locale[0]));
         langCombo.setPreferredSize(new Dimension(200, 40));
 
+        //устанавливаем текущий элемент списка как текущую локаль
         langCombo.setSelectedItem(ResourceManager.getInstance().getCurrentLocale());
 
+        //Перерисовывает названия языков в большой буквы
         langCombo.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -166,6 +192,7 @@ public class LoginFrame extends JFrame implements LocaleChangeListener {
             }
         });
 
+        //слушатель
         langCombo.addActionListener(e -> {
             Locale selected = (Locale) langCombo.getSelectedItem();
             if (selected != null) {
@@ -175,6 +202,7 @@ public class LoginFrame extends JFrame implements LocaleChangeListener {
 
         add(langCombo, gbc);
 
+        //подписываем слушателей на кнопки. Слушатели будут выполнять метод handleAuth()
         loginButton.addActionListener(e -> handleAuth());
         registerButton.addActionListener(e -> handleAuth());
     }

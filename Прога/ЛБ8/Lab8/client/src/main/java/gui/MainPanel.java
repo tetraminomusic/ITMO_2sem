@@ -26,6 +26,9 @@ public class MainPanel extends JPanel implements LocaleChangeListener {
     private MapPanel mapPanel;
     private MainFrame mainFrame;
 
+    /**
+     * Инициализирует компоненты контейнера и подписывает изменение локали
+     */
     public MainPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
         setLayout(new BorderLayout());
@@ -39,7 +42,7 @@ public class MainPanel extends JPanel implements LocaleChangeListener {
     private void initComponents() {
         tabbedPane = new JTabbedPane();
 
-        // --- Вкладка Таблицы ---
+        //Вкладка Таблицы
         tableTab = new JPanel(new BorderLayout());
         JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         filterLabel = new JLabel();
@@ -70,11 +73,11 @@ public class MainPanel extends JPanel implements LocaleChangeListener {
             @Override public void changedUpdate(DocumentEvent e) { applyFilter(); }
         });
 
-        // --- Вкладка Карты ---
+        //Вкладка Карты
         mapPanel = new MapPanel(mainFrame);
 
 
-        // добавляем вкладки
+        //добавляем вкладки
         tabbedPane.add("", tableTab);
         tabbedPane.add("", mapPanel);
 
@@ -82,21 +85,21 @@ public class MainPanel extends JPanel implements LocaleChangeListener {
     }
 
     /**
-     * НОВЫЙ МЕТОД: Применяет оформление к колонкам.
+     * Применяет оформление к колонкам.
      * Нужно вызывать после каждой смены структуры таблицы.
      */
     private void setupTableAppearance() {
-        // 1. Создаем рендерер для центрирования
+        //Создаем рендерер для центрирования
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 
-        // 2. Применяем центрирование ко ВСЕМ столбцам (от 0 до 10)
+        //Применяем центрирование ко ВСЕМ столбцам (от 0 до 10)
         for (int i = 0; i < labTable.getColumnCount(); i++) {
             labTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
 
-        // 3. Явно задаем ширину для узких колонок
-        // Устанавливаем и Preferred (желаемую), и Minimum ширину
+        //Явно задаем ширину для узких колонок
+        //Устанавливаем и Preferred (желаемую), и Minimum ширину
         setColumnWidth(0, 40);  // ID
         setColumnWidth(3, 50);  // X
         setColumnWidth(4, 50);  // Y
@@ -104,11 +107,12 @@ public class MainPanel extends JPanel implements LocaleChangeListener {
         setColumnWidth(6, 120); // Сложность
 
         // Для текстовых колонок (Название, Описание) пусть работает авто-подбор
-        // Но мы вызовем его ПОСЛЕ того, как задали ширину мелким колонкам
         adjustColumnWidths(labTable);
     }
 
-    /** Вспомогательный метод для задания ширины конкретной колонке */
+    /**
+     * Вспомогательный метод для задания ширины конкретной колонке
+     */
     private void setColumnWidth(int index, int width) {
         if (labTable.getColumnCount() > index) {
             TableColumn col = labTable.getColumnModel().getColumn(index);
@@ -118,8 +122,10 @@ public class MainPanel extends JPanel implements LocaleChangeListener {
     }
 
     public void updateTableData(List<LabWork> newData) {
+        //таблица получила данные
         tableModel.setLabWorks(newData);
 
+        //эти же данные получает и карта
         if (mapPanel != null) {
             mapPanel.updateData(newData);
         }
@@ -133,8 +139,6 @@ public class MainPanel extends JPanel implements LocaleChangeListener {
 
         tabbedPane.setTitleAt(0, i18n.getString("main.tab.table"));
         tabbedPane.setTitleAt(1, i18n.getString("main.tab.map"));
-
-
         filterLabel.setText(i18n.getString("main.label.filter") + ": ");
 
         if (tableModel != null) {
@@ -153,6 +157,9 @@ public class MainPanel extends JPanel implements LocaleChangeListener {
         }
     }
 
+    /**
+     * Метод, который пробегает по всем строкам, измеряет ширинку текста в пикселях и раздвигает колонки под нужный размер
+     */
     private void adjustColumnWidths(JTable table) {
         for (int column = 0; column < table.getColumnCount(); column++) {
             TableColumn tableColumn = table.getColumnModel().getColumn(column);
@@ -178,6 +185,4 @@ public class MainPanel extends JPanel implements LocaleChangeListener {
     public JTable getTable() {
         return labTable;
     }
-
-
 }

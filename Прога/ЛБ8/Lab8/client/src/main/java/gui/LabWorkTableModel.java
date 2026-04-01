@@ -59,25 +59,12 @@ public class LabWorkTableModel extends AbstractTableModel {
             case 2: return lab.getOwnerLogin() != null ? lab.getOwnerLogin() : "system";
             case 3: return lab.getCoordinates().getX();
             case 4: return lab.getCoordinates().getY();
-
-            // Форматируем дробное число по локали (например, 10,5 или 10.5)
             case 5: return i18n.formatNumber(lab.getMinimalPoint());
-
-            // Enum выводим как строку
             case 6: return lab.getDifficulty().toString();
-
-            // Форматируем дату по локали
             case 7: return i18n.formatDate(lab.getCreationDate());
-
-            // Описание (может быть null)
             case 8: return lab.getDescription() != null ? lab.getDescription() : "";
-
-            // TunedInWorks (может быть null)
             case 9: return lab.getTunedInWorks() != null ? lab.getTunedInWorks() : "";
-
-            // Автор (выводим только имя для компактности, или пустоту)
             case 10: return lab.getAuthor() != null ? lab.getAuthor().getName() : "";
-
             default: return null;
         }
     }
