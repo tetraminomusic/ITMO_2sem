@@ -1,0 +1,60 @@
+ORG 0x400
+WORD 6 DUP (?)
+
+ORG 0x6D4
+WORD -55, -54, -56
+
+mask: WORD 0x07FF
+mask_minus_detect: WORD 0x0400
+sign_extend: WORD 0xF800
+
+temp: WORD ?
+
+current: WORD 0x6D4
+result: WORD 0x400
+
+func_const: WORD 660
+
+len: WORD 3
+
+START:
+	CLA
+number:
+	LD (current)+
+	AND mask
+	ST temp
+	AND mask_minus_detect
+	BEQ plus
+	LD temp
+	OR sign_extend
+	ST temp
+plus:
+	LD temp
+	CALL function
+	LOOP len
+	JUMP number
+	HLT
+
+
+function:
+	ASL
+	ASL
+	ASL
+	ADD temp
+	ADD temp
+	ADD temp
+	ADD temp
+	ADD func_const
+	ST (result)+
+	BPL plus_func
+	CLA
+	DEC
+	ST (result)+
+	JUMP return	
+plus_func:
+	CLA
+	ST (result)+
+return:
+	RET
+	
+	

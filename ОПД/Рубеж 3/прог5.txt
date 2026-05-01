@@ -1,0 +1,75 @@
+ORG 0x400
+WORD 26 DUP (?)
+
+ORG 0x6E6 ;Исходный массив 
+WORD 100       ; 1.  13*100 + 1425 = 2725 (0x00000AA5)
+ WORD 0         ; 2.  13*0 + 1425 = 1425 (0x00000591)
+ WORD -1        ; 3.  13*(-1) + 1425 = 1412 (0x00000584)
+ WORD -200      ; 4.  13*(-200) + 1425 = -1175 (0xFFFFFB69)
+ WORD 2047      ; 5.  Max 12-bit: 13*2047 + 1425 = 28036 (0x00006D84)
+ WORD -2048     ; 6.  Min 12-bit: 13*(-2048) + 1425 = -25199 (0xFFFF9D91)
+ WORD -110      ; 7.  13*(-110) + 1425 = -5 (0xFFFFFFFB)
+ WORD 50        ; 8.  13*50 + 1425 = 2075 (0x0000081B)
+ WORD -150      ; 9.  13*(-150) + 1425 = -525 (0xFFFFFEF3)
+ WORD 1000      ; 10. 13*1000 + 1425 = 14425 (0x00003859)
+ WORD -500      ; 11. 13*(-500) + 1425 = -5075 (0xFFFFEC2D)
+ WORD 123       ; 12. 13*123 + 1425 = 3024 (0x00000BD0)
+ WORD -1000     ; 13. 13*(-1000) + 1425 = -11575 (0xFFFFD2C9)
+
+mask: WORD 0x0FFF
+mask_minus_detect: WORD 0x0800
+sign_extend: WORD 0xF000
+
+current: WORD 0x6E6
+result: WORD 0x400
+
+len: WORD 13
+
+temp: WORD ?
+
+func_const: WORD 1425 ;миеняй
+
+START:
+	CLA
+number:
+	LD(current)+
+	AND mask
+	ST temp
+	AND mask_minus_detect
+	BEQ plus
+	LD temp
+	OR sign_extend
+	ST temp
+plus:
+	LD temp
+	CALL function
+	LOOP len
+	JUMP number
+	HLT
+
+
+function:
+	ASL
+	ASL
+	ASL
+	ADD temp
+	ADD temp
+	ADD temp
+	ADD temp
+	ADD temp
+	ADD func_const
+	ST temp
+	BPL plus_func
+	ST (result)+
+	CLA
+	DEC
+	ADC #0
+	ST (result)+
+	JUMP return
+plus_func:
+	ST (result)+
+	CLA
+	ST (result)+
+return:
+	RET
+	

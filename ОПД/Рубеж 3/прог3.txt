@@ -1,0 +1,56 @@
+ORG 0x400
+WORD 34 DUP (?) ; Результат
+
+ORG 0x6DA
+INPUT: WORD 10, 0, -1, 100, -30, 500, -500, 511, -512, -22
+
+len: WORD ?
+current: WORD 0x6DA
+output_current: WORD 0x400
+
+temp: WORD ?
+
+mask: WORD 0x03FF ;Маска для отсечения мусора в старших битах
+minus_mask: WORD 0x0200 ;Маска для проверки знака числа
+sign_extend: WORD 0xFC00 ;Расширение знака у чисел в доп коде
+
+addition_for_function: WORD 318
+
+START:
+	LD #10
+	ST len
+number:
+	LD (current)+
+	AND mask
+	ST temp
+	AND minus_mask
+	BEQ plus
+	LD temp
+	OR sign_extend
+	ST temp
+plus:
+	LD temp
+	CALL function
+	LOOP len
+	JUMP number
+	HLT	
+
+
+function:
+	ASL
+	ASL
+	ASL
+	ASL
+	SUB temp
+	ADD addition_for_function
+	ST (output_current)+
+	BPL plus_function
+	;Отрицательные
+	CLA
+	DEC
+	JUMP output_function
+plus_function:
+	CLA
+output_function:
+	ST (output_current)+
+	RET

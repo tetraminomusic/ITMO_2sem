@@ -1,0 +1,58 @@
+ORG 0x300
+little_byte: WORD ?
+big_byte: WORD ?
+
+ORG 0x5C0
+WORD 22 DUP (5)
+
+mask: WORD 0x07FF
+minus_detect_mask: WORD 0x0400
+sign_extend: WORD 0xF800
+
+len: WORD 22
+temp: WORD ?
+const_func: WORD 150 ;Заместо 150
+
+current: WORD 0x5C0
+
+START:
+	CLA
+	ST $little_byte
+	ST $big_byte
+	ST temp
+number:
+	LD (current)+
+	AND mask
+	ST temp
+	AND minus_detect_mask
+	BNE minus
+	LD temp
+	CALL function
+minus:
+	LOOP len
+	JUMP number
+	HLT
+
+function:
+	ASL
+	ASL
+	ASL
+	ADD temp
+	SUB const_func
+	ST temp
+	BMI minus_func
+	ADD $little_byte
+	ST $little_byte
+	CLA
+	ADC $big_byte
+	ST $big_byte
+	JUMP return
+minus_func:
+	ADD $little_byte
+	ST $little_byte
+	CLA
+	ADC $big_byte
+	SUB #1
+	ST $big_byte
+return:
+	RET

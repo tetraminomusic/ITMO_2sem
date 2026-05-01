@@ -1,0 +1,47 @@
+ORG 0x228
+current: WORD 0x400
+len: WORD 12
+
+START:
+	CLA
+	ST $sum
+number:
+	LD #12
+	SUB len
+	AND #1
+	BEQ eval
+	LD (current)+
+	JUMP outro
+eval:
+	LD (current)+
+	CALL function
+	JUMP outro
+outro:
+	LOOP len
+	JUMP number
+	HLT
+
+function:
+	ASL
+	SUB #100
+	BMI return
+	ADD $sum
+	ST $sum
+	return: RET
+
+ORG 0x400          ; Данные массива
+ WORD 60
+ WORD 10
+ WORD 40
+ WORD 100
+ WORD 100
+ WORD 5
+ WORD 50
+ WORD 999
+ WORD 200
+ WORD 0
+ WORD -50
+ WORD 77
+
+ORG 0x500
+ sum: WORD ?

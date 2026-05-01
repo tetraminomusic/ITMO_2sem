@@ -1,0 +1,82 @@
+ORG 0x400
+little_byte: WORD 0xFFFF
+big_byte: WORD 0x001F
+
+ORG 0x6CF
+WORD 0, 0           ; i=2 (скип)
+ WORD 0xFFFF, 0x001F ; i=3: [-1] (все 21 бит установлены в 1)
+ WORD 0, 0           ; i=4 (скип)
+ WORD 0, 0           ; i=5 (скип)
+ WORD 0xAAAA, 0x001A ; i=6: [1010...] (некоторые биты в 1)
+ WORD 0, 0           ; i=7 (скип)
+ WORD 0, 0           ; i=8 (скип)
+ WORD 0x5555, 0x0015 ; i=9: [0101...] (общих бит с i=6 нет)
+ WORD 0, 0           ; i=10 (скип)
+ WORD 0, 0           ; i=11 (скип)
+ WORD 0x0000, 0x0010 ; i=12: [Только 21-й бит (знак) равен 1]
+ WORD 0, 0           ; i=13 (скип)
+ WORD 0, 0           ; i=14 (скип)
+ WORD 0xFFFF, 0x001F ; i=15: [-1]
+ WORD 0, 0           ; i=16 (скип)
+ WORD 0, 0           ; i=17 (скип)
+ WORD 0xFFFF, 0x001F ; i=18: [-1]
+ WORD 0, 0           ; i=19 (скип)
+ WORD 0, 0           ; i=20 (скип)
+ WORD 0xFFFF, 0x001F ; i=21: [-1]
+ WORD 0, 0           ; i=22 (скип)	
+
+len: WORD 3
+
+
+current: WORD 0x6CF
+
+mask: WORD 0x001F
+mask_minus_detect: WORD 0x0010
+sign_extend: WORD 0xFFE0
+
+
+temp_little: WORD ?
+temp_big: WORD ?
+
+START:
+	LD #2
+	ADD current
+	ST current
+number:
+	; Младший байт
+	LD (current)+
+	ST temp_little
+
+	;Старший байт
+	LD (current)+
+	AND mask
+	ST temp_big
+	AND mask_minus_detect
+	BEQ plus
+
+	;Отрицательное
+	LD temp_big
+	OR sign_extend
+	ST temp_big
+plus:
+	CALL function
+	LD #4
+	ADD current
+	ST current
+	LOOP len
+	JUMP number
+	HLT
+
+function:
+	LD temp_little
+	AND $little_byte
+	ST $little_byte
+
+	LD temp_big
+	AND $big_byte
+	ST $big_byte
+	RET
+	
+	
+	
+	
