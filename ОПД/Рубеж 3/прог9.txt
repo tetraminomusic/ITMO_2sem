@@ -1,0 +1,69 @@
+ORG 0x400
+little_byte: WORD ?
+big_byte: WORD ?
+
+ORG 0x6DD
+ WORD 0, 0           ; i=3 (скип)
+ WORD 0x0D40, 0x0003 ; i=4 (кратно 4): [200 000] (0x30D40) -> Считаем
+ WORD 0, 0           ; i=5 (скип)
+ WORD 0, 0           ; i=6 (скип)
+ WORD 0, 0           ; i=7 (скип)
+ WORD 0x7960, 0x0006 ; i=8 (кратно 4): [-100 000] (в 19 битах это 67960) -> Считаем
+ WORD 0, 0           ; i=9 (скип)
+ WORD 0, 0           ; i=10 (скип)
+ WORD 0, 0           ; i=11 (скип)
+ WORD 0x0005, 0x0000 ; i=12 (кратно 4): [5] -> Считаем
+ WORD 0, 0           ; i=13 (скип)
+ WORD 0, 0           ; i=14 (скип)
+ WORD 0, 0           ; i=15 (скип)
+
+mask: WORD 0x0007
+mask_minus_detect: WORD 0x0004
+sign_extend: WORD 0xFFF8
+
+little_temp: WORD ?
+big_temp: WORD ?
+
+current: WORD 0x6DD
+
+i: WORD 3
+len: WORD 13
+
+START:
+	CLA
+	LD $little_byte
+	LD $big_byte
+number:
+	LD (current)+
+	ST $little_temp
+	LD (current)+
+	AND mask
+	ST big_temp
+	AND mask_minus_detect
+	BEQ plus
+	LD big_temp
+	OR sign_extend
+	ST big_temp
+plus:
+	LD i
+	AND #3
+	BNE not_even
+	CALL function
+not_even:
+	LD i
+	INC
+	ST i
+	LOOP len
+	JUMP number
+	HLT
+
+function:
+	LD little_temp
+	ADD $little_byte
+	ST $little_byte
+	LD big_temp
+	ADC $big_byte
+	ST $big_byte
+	RET
+	
+	

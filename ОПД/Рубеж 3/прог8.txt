@@ -1,0 +1,61 @@
+ORG 0x400
+little_byte: WORD ?
+big_byte: WORD ?
+
+ORG 0x6C8
+ WORD 0, 0         
+ WORD 0x1488, 0x003F
+ WORD 0, 0          
+ WORD 0x1488, 0x003F
+ WORD 0, 0          
+ WORD 0x1488, 0x003F
+
+mask: WORD 0x003F
+mask_minus_detect: WORD 0x0020
+sign_extend: WORD 0xFFC0
+
+little_temp: WORD ?
+big_temp: WORD ?
+
+current: WORD 0x6C8
+len: WORD 6
+i: WORD 3
+
+START:
+	CLA
+	DEC
+	ST $little_byte
+	ST $big_byte
+number:
+	LD (current)+
+	ST little_temp
+	LD (current)+
+	AND mask
+	ST big_temp
+	AND mask_minus_detect
+	BEQ plus
+	LD big_temp
+	OR sign_extend
+	ST big_temp
+plus:
+	LD i
+	AND #1
+	BNE not_even
+	CALL function
+not_even:
+	LD i
+	INC
+	ST i
+	LOOP len
+	JUMP number
+	HLT
+function:
+	LD little_temp
+	AND $little_byte
+	ST $little_byte
+	LD big_temp
+	AND $big_byte
+	ST $big_byte
+	RET
+	
+	
